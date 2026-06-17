@@ -46,7 +46,6 @@ final class AppState: ObservableObject {
     }
     @Published var funToasts: Bool { didSet { defaults.set(funToasts, forKey: Keys.funToasts) } }
     @Published var lidNotification: Bool { didSet { defaults.set(lidNotification, forKey: Keys.lidNotification) } }
-    @Published var lockOnLidClose: Bool { didSet { defaults.set(lockOnLidClose, forKey: Keys.lockOnLidClose) } }
     @Published var launchAtLogin: Bool {
         didSet {
             defaults.set(launchAtLogin, forKey: Keys.launchAtLogin)
@@ -86,7 +85,6 @@ final class AppState: ObservableObject {
         static let allUnlimited = "allUnlimited"
         static let funToasts = "funToasts"
         static let lidNotification = "lidNotification"
-        static let lockOnLidClose = "lockOnLidClose"
         static let launchAtLogin = "launchAtLogin"
         static let firstRunSeen = "firstRunSeen"
     }
@@ -114,7 +112,6 @@ final class AppState: ObservableObject {
         allUnlimited = store.bool(forKey: Keys.allUnlimited)
         funToasts = store.object(forKey: Keys.funToasts) as? Bool ?? true
         lidNotification = store.object(forKey: Keys.lidNotification) as? Bool ?? true
-        lockOnLidClose = store.object(forKey: Keys.lockOnLidClose) as? Bool ?? true
         launchAtLogin = store.bool(forKey: Keys.launchAtLogin)
         firstRunSeen = store.bool(forKey: Keys.firstRunSeen)
 
@@ -276,10 +273,11 @@ final class AppState: ObservableObject {
 
     // MARK: - Capot
 
-    /// Capot fermé pendant l'infusion : on verrouille l'écran (la machine
-    /// reste éveillée grâce à disablesleep) pour ne pas la laisser ouverte.
+    /// Capot fermé pendant l'infusion : on verrouille TOUJOURS l'écran (la
+    /// machine reste éveillée grâce à disablesleep) pour ne jamais la laisser
+    /// ouverte et déverrouillée. Comportement systématique, non configurable.
     private func handleLidClosed() {
-        guard isBrewing, lockOnLidClose else { return }
+        guard isBrewing else { return }
         Task.detached { ScreenLocker.lock() }
     }
 

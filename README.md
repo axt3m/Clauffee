@@ -6,7 +6,7 @@ while you step away. Toggle **Start Brew**, shut the lid, walk off.
 
 - 🛡️ Blocks sleep via `pmset disablesleep` — works lid-closed
 - ⏱️ Optional auto-off time limit (1–9 h) or **Eternal brew** (never sleep)
-- 🔒 Optionally **locks the screen** when you close the lid (stays awake, but secure)
+- 🔒 **Locks the screen** when you close the lid (stays awake, but secure)
 - 🔔 "You're back" notification when you reopen the lid
 - ☕ Animated cup, light/dark themes, EN / FR / RU
 - 🪶 Lives in the menu bar (no Dock icon)

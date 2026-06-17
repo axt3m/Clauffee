@@ -157,8 +157,6 @@ struct SettingsView: View {
             divider
             toggleRow(title: s.lidNotif, sub: s.lidNotifSub, isOn: $state.lidNotification)
             divider
-            toggleRow(title: s.lockOnClose, sub: s.lockOnCloseSub, isOn: $state.lockOnLidClose)
-            divider
             toggleRow(title: s.launchLogin, sub: s.launchLoginSub, isOn: $state.launchAtLogin)
         }
     }

@@ -141,8 +141,6 @@ struct Strings {
     let funToasts: String
     let lidNotif: String
     let lidNotifSub: String
-    let lockOnClose: String
-    let lockOnCloseSub: String
     let launchLogin: String
     let launchLoginSub: String
     let about: String
@@ -244,8 +242,6 @@ extension Strings {
         funToasts: "Message bubble when a session starts",
         lidNotif: "“You're back” notification",
         lidNotifSub: "Shown when you reopen the lid — a reminder to stop blocking sleep",
-        lockOnClose: "Lock screen when the lid closes",
-        lockOnCloseSub: "Keeps Claude running but locks your Mac when you shut the lid — sleep stays off",
         launchLogin: "Keep CaffeLatte in the menu bar",
         launchLoginSub: "Relaunches automatically each time you log in",
         about: "CaffeLatte v1.0 · Quitting saves your settings and always restores normal sleep"
@@ -337,8 +333,6 @@ extension Strings {
         funToasts: "Bulle de message au lancement d'une session",
         lidNotif: "Notification « Te revoilà »",
         lidNotifSub: "Affichée à la réouverture du capot — un rappel pour arrêter le blocage de la mise en veille",
-        lockOnClose: "Verrouiller l'écran à la fermeture du capot",
-        lockOnCloseSub: "Garde Claude actif mais verrouille ton Mac quand tu fermes le capot — la veille reste bloquée",
         launchLogin: "Garder CaffeLatte dans la barre des menus",
         launchLoginSub: "Se relance automatiquement à chaque ouverture de session",
         about: "CaffeLatte v1.0 · Quitter sauvegarde tes réglages et rétablit toujours la veille normale"
@@ -432,8 +426,6 @@ extension Strings {
         funToasts: "Сообщение при запуске сессии",
         lidNotif: "Уведомление «С возвращением»",
         lidNotifSub: "Показывается при открытии крышки — напомнит снять блокировку сна",
-        lockOnClose: "Блокировать экран при закрытии крышки",
-        lockOnCloseSub: "Claude продолжает работать, но Mac блокируется при закрытии крышки — сон остаётся отключён",
         launchLogin: "Держать CaffeLatte в строке меню",
         launchLoginSub: "Автоматически запускается при каждом входе",
         about: "CaffeLatte v1.0 · Выход сохраняет настройки и всегда возвращает обычный сон"
