@@ -1,6 +1,6 @@
 //
 //  Notifier.swift
-//  CaffeLatte
+//  Clauffee
 //
 //  Deux notifications « Te revoilà » à la réouverture du capot :
 //   · BREW_ASK  — infusion encore active → Continuer / Arrêter
@@ -120,7 +120,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
 
     private func post(body: String, category: String) {
         let content = UNMutableNotificationContent()
-        content.title = "CaffeLatte"
+        content.title = "Clauffee"
         content.body = body
         content.categoryIdentifier = category
         content.sound = .default

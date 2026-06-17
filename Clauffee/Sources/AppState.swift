@@ -1,6 +1,6 @@
 //
 //  AppState.swift
-//  CaffeLatte
+//  Clauffee
 //
 //  Machine à états centrale. Une seule source de vérité pour :
 //  réglages persistés, cycle de vie de l'infusion, monitors (Claude, capot),
@@ -400,7 +400,7 @@ final class AppState: ObservableObject {
                 try SMAppService.mainApp.unregister()
             }
         } catch {
-            NSLog("CaffeLatte: login item error — \(error.localizedDescription)")
+            NSLog("Clauffee: login item error — \(error.localizedDescription)")
         }
     }
 }

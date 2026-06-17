@@ -1,6 +1,6 @@
 //
 //  ToastPresenter.swift
-//  CaffeLatte
+//  Clauffee
 //
 //  La bulle : NSPanel sans bordure, level .statusBar (au-dessus de TOUT,
 //  Xcode inclus), .canJoinAllSpaces. Apparition 0,25 s, maintien ~3,5 s,

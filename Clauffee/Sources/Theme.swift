@@ -1,6 +1,6 @@
 //
 //  Theme.swift
-//  CaffeLatte
+//  Clauffee
 //
 //  Palettes Milk (Lait) / Espresso — les couleurs de la maquette v7.
 //

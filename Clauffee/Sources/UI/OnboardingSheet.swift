@@ -1,6 +1,6 @@
 //
 //  OnboardingSheet.swift
-//  CaffeLatte
+//  Clauffee
 //
 //  Premier « Lancer le café » : trois vérifications uniques
 //  (app Claude iPhone, même compte, /config) + l'encart qui explique

@@ -1,6 +1,6 @@
 //
-//  CaffeLatteApp.swift
-//  CaffeLatte
+//  ClauffeeApp.swift
+//  Clauffee
 //
 //  Point d'entrée : MenuBarExtra (style .window), label tasse + timer,
 //  AppDelegate pour le mode accessory (pas d'icône Dock) et le filet
@@ -11,7 +11,7 @@ import AppKit
 import SwiftUI
 
 @main
-struct CaffeLatteApp: App {
+struct ClauffeeApp: App {
 
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var state = AppState.shared

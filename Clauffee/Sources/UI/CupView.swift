@@ -1,6 +1,6 @@
 //
 //  CupView.swift
-//  CaffeLatte
+//  Clauffee
 //
 //  La tasse animée. Tout est piloté par UN TimelineView (déterministe,
 //  pas de conflit withAnimation/TimelineView) :

@@ -1,6 +1,6 @@
 //
 //  ScreenLocker.swift
-//  CaffeLatte
+//  Clauffee
 //
 //  Verrouille l'écran SANS endormir la machine. Quand `disablesleep` est
 //  actif, fermer le capot garde le Mac éveillé mais déverrouillé : on

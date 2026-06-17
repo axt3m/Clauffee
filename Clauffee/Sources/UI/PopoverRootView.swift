@@ -1,6 +1,6 @@
 //
 //  PopoverRootView.swift
-//  CaffeLatte
+//  Clauffee
 //
 //  Racine du contenu du popover (fenêtre MenuBarExtra) :
 //  vue principale ⇄ réglages, fond thémé, overlay onboarding.

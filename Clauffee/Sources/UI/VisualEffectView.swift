@@ -1,6 +1,6 @@
 //
 //  VisualEffectView.swift
-//  CaffeLatte
+//  Clauffee
 //
 //  Translucidité « menu macOS » (vibrancy) pour le popover et les feuilles.
 //  Enveloppe un NSVisualEffectView en blending .behindWindow et rend la

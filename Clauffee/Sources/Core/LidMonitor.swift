@@ -1,6 +1,6 @@
 //
 //  LidMonitor.swift
-//  CaffeLatte
+//  Clauffee
 //
 //  Sonde l'état du capot (IOKit AppleClamshellState) toutes les 2 s.
 //  Détecte la transition fermé → ouvert pour déclencher la notification

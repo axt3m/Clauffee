@@ -1,11 +1,11 @@
 //
 //  PowerManager.swift
-//  CaffeLatte
+//  Clauffee
 //
 //  Pilote `pmset -a disablesleep` via sudo -n (non-interactif).
 //  Nécessite une règle sudoers — une seule fois, en une seule commande :
 //
-//      echo '%admin ALL=(root) NOPASSWD: /usr/bin/pmset -a disablesleep 1, /usr/bin/pmset -a disablesleep 0' | sudo tee /etc/sudoers.d/caffelatte
+//      echo '%admin ALL=(root) NOPASSWD: /usr/bin/pmset -a disablesleep 1, /usr/bin/pmset -a disablesleep 0' | sudo tee /etc/sudoers.d/clauffee
 //
 //  ⚠️ App Sandbox doit être DÉSACTIVÉ (Process + pgrep + IOKit).
 //
@@ -24,7 +24,7 @@ nonisolated enum PowerManager {
 
     /// Commande unique copier-coller : crée la règle sudoers d'un seul tee.
     /// Les quotes simples protègent `%` et `,` de l'interprétation par zsh.
-    static let sudoersInstall = "echo '\(sudoersLine)' | sudo tee /etc/sudoers.d/caffelatte"
+    static let sudoersInstall = "echo '\(sudoersLine)' | sudo tee /etc/sudoers.d/clauffee"
 
     /// Active/désactive disablesleep. Lève `PowerError.sudoersMissing`
     /// si sudo -n échoue (règle absente ou invalide).

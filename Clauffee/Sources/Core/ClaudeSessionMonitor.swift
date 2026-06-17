@@ -1,6 +1,6 @@
 //
 //  ClaudeSessionMonitor.swift
-//  CaffeLatte
+//  Clauffee
 //
 //  Compte les sessions Claude Code actives via pgrep, toutes les ~5 s
 //  pendant l'infusion. Sert à la ligne "N sessions actives" et à
@@ -42,7 +42,7 @@ final class ClaudeSessionMonitor {
 
     /// pgrep -f "(^|/)claude( |$)" :
     /// matche `claude`, `/usr/local/bin/claude --rc`, `claude remote-control`…
-    /// sans matcher CaffeLatte ni les binaires contenant "claude" au milieu.
+    /// sans matcher Clauffee ni les binaires contenant "claude" au milieu.
     static func claudeProcessCount() -> Int {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/pgrep")

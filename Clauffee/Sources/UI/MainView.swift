@@ -1,6 +1,6 @@
 //
 //  MainView.swift
-//  CaffeLatte
+//  Clauffee
 //
 //  Vue principale du popover : header (tasse animée, statut, ⚙︎),
 //  carte (toggle brew, minuteur, sessions Claude, erreur sudoers),
@@ -49,7 +49,7 @@ struct MainView: View {
             .frame(width: 50, height: 50)
 
             VStack(alignment: .leading, spacing: 1) {
-                Text("CaffeLatte")
+                Text("Clauffee")
                     .font(.system(size: 16, weight: .heavy, design: .rounded))
                     .foregroundStyle(p.text1)
                 Text(state.isBrewing ? s.statusOn : s.statusOff)

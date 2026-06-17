@@ -1,6 +1,6 @@
 //
 //  SettingsView.swift
-//  CaffeLatte
+//  Clauffee
 //
 //  Réglages : Apparence (Lait/Expresso), Langue (EN/FR/RU),
 //  limite d'infusion 1–9 h avec avertissements chauffe,

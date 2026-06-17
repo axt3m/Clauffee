@@ -1,6 +1,6 @@
 //
 //  L10n.swift
-//  CaffeLatte
+//  Clauffee
 //
 //  Localisation EN / FR / RU.
 //  Choix délibéré d'un système maison plutôt qu'un String Catalog :
@@ -208,22 +208,22 @@ extension Strings {
         notifDone: { v in "You're back! ☕ The brew already ended — \(v) total" },
         ok: "OK",
         obTitle: "Before your first brew ☕",
-        obIntro: "CaffeLatte keeps your Claude Code sessions alive with the lid closed. Three one-time checks:",
+        obIntro: "Clauffee keeps your Claude Code sessions alive with the lid closed. Three one-time checks:",
         ob1t: "Claude app on your iPhone",
         ob1s: "Installed, with notifications allowed.",
         ob2t: "Same account everywhere",
         ob2s: "Sign in with the same claude.ai account as your terminal.",
         ob3t: "Claude Code config",
         ob3s: "Run /config → set “Remote Control for all sessions” to true (not “default”) and turn on “Push when Claude decides”. Then new sessions need no /remote-control.",
-        obNote: { h in "Every new session starts with a \(h) h block limit — adjustable in Settings ⚙︎. When you reopen the lid, CaffeLatte sums up or offers to stop." },
+        obNote: { h in "Every new session starts with a \(h) h block limit — adjustable in Settings ⚙︎. When you reopen the lid, Clauffee sums up or offers to stop." },
         obConfirm: "I set Remote Control for all sessions to “true”",
-        obNotif: "Allow CaffeLatte notifications",
+        obNotif: "Allow Clauffee notifications",
         obNotifOn: "Notifications allowed ✓",
         obNotifDenied: "Blocked — open System Settings",
         brewBtn: "Got it ✓",
         skip: "Remind me later",
         errTitle: "One-time permission needed",
-        errBody: "CaffeLatte toggles sleep with pmset, which needs admin rights. Paste this once in Terminal, then try again:",
+        errBody: "Clauffee toggles sleep with pmset, which needs admin rights. Paste this once in Terminal, then try again:",
         retry: "Try again",
         copy: "Copy",
         copied: "Copied ✓",
@@ -242,9 +242,9 @@ extension Strings {
         funToasts: "Message bubble when a session starts",
         lidNotif: "“You're back” notification",
         lidNotifSub: "Shown when you reopen the lid — a reminder to stop blocking sleep",
-        launchLogin: "Keep CaffeLatte in the menu bar",
+        launchLogin: "Keep Clauffee in the menu bar",
         launchLoginSub: "Relaunches automatically each time you log in",
-        about: "CaffeLatte v1.0 · Quitting saves your settings and always restores normal sleep"
+        about: "Clauffee v1.0 · Quitting saves your settings and always restores normal sleep"
     )
 }
 
@@ -299,22 +299,22 @@ extension Strings {
         notifDone: { v in "Te revoilà ! ☕ L'infusion s'est terminée toute seule — \(v) de brew" },
         ok: "OK",
         obTitle: "Avant ta première infusion ☕",
-        obIntro: "CaffeLatte garde tes sessions Claude Code vivantes capot fermé. Trois vérifs — une seule fois :",
+        obIntro: "Clauffee garde tes sessions Claude Code vivantes capot fermé. Trois vérifs — une seule fois :",
         ob1t: "L'app Claude sur ton iPhone",
         ob1s: "Installée, avec les notifications autorisées.",
         ob2t: "Le même compte partout",
         ob2s: "Connecte-toi avec le même compte claude.ai que dans ton terminal.",
         ob3t: "Config Claude Code",
         ob3s: "Lance /config → règle « Remote Control for all sessions » sur true (pas « default ») et active « Push when Claude decides ». Plus besoin de taper /remote-control.",
-        obNote: { h in "Chaque nouvelle session démarre avec un temps limite de \(h) h de blocage — modifiable dans les Réglages ⚙︎. À la réouverture du capot, CaffeLatte te résume ou te propose d'arrêter." },
+        obNote: { h in "Chaque nouvelle session démarre avec un temps limite de \(h) h de blocage — modifiable dans les Réglages ⚙︎. À la réouverture du capot, Clauffee te résume ou te propose d'arrêter." },
         obConfirm: "J'ai réglé « Remote Control for all sessions » sur « true »",
-        obNotif: "Autoriser les notifications CaffeLatte",
+        obNotif: "Autoriser les notifications Clauffee",
         obNotifOn: "Notifications autorisées ✓",
         obNotifDenied: "Bloquées — ouvrir les Réglages Système",
         brewBtn: "C'est noté ✓",
         skip: "Me le rappeler plus tard",
         errTitle: "Autorisation unique requise",
-        errBody: "CaffeLatte pilote la veille via pmset, qui demande les droits admin. Colle ça une fois dans le Terminal puis réessaie :",
+        errBody: "Clauffee pilote la veille via pmset, qui demande les droits admin. Colle ça une fois dans le Terminal puis réessaie :",
         retry: "Réessayer",
         copy: "Copier",
         copied: "Copié ✓",
@@ -333,9 +333,9 @@ extension Strings {
         funToasts: "Bulle de message au lancement d'une session",
         lidNotif: "Notification « Te revoilà »",
         lidNotifSub: "Affichée à la réouverture du capot — un rappel pour arrêter le blocage de la mise en veille",
-        launchLogin: "Garder CaffeLatte dans la barre des menus",
+        launchLogin: "Garder Clauffee dans la barre des menus",
         launchLoginSub: "Se relance automatiquement à chaque ouverture de session",
-        about: "CaffeLatte v1.0 · Quitter sauvegarde tes réglages et rétablit toujours la veille normale"
+        about: "Clauffee v1.0 · Quitter sauvegarde tes réglages et rétablit toujours la veille normale"
     )
 }
 
@@ -392,22 +392,22 @@ extension Strings {
         notifDone: { v in "С возвращением! ☕ Заварка уже закончилась — всего \(v)" },
         ok: "OK",
         obTitle: "Перед первой заваркой ☕",
-        obIntro: "CaffeLatte держит твои сессии Claude Code живыми при закрытой крышке. Три проверки — один раз:",
+        obIntro: "Clauffee держит твои сессии Claude Code живыми при закрытой крышке. Три проверки — один раз:",
         ob1t: "Приложение Claude на iPhone",
         ob1s: "Установлено, уведомления разрешены.",
         ob2t: "Один аккаунт везде",
         ob2s: "Войди с тем же аккаунтом claude.ai, что и в терминале.",
         ob3t: "Настройка Claude Code",
         ob3s: "Запусти /config → задай «Remote Control for all sessions» = true (не «default») и включи «Push when Claude decides». Тогда новым сессиям не нужен /remote-control.",
-        obNote: { h in "Каждая новая сессия стартует с лимитом блокировки \(h) ч — меняется в Настройках ⚙︎. Когда откроешь крышку, CaffeLatte подведёт итог или предложит остановить." },
+        obNote: { h in "Каждая новая сессия стартует с лимитом блокировки \(h) ч — меняется в Настройках ⚙︎. Когда откроешь крышку, Clauffee подведёт итог или предложит остановить." },
         obConfirm: "Я задал «Remote Control for all sessions» = «true»",
-        obNotif: "Разрешить уведомления CaffeLatte",
+        obNotif: "Разрешить уведомления Clauffee",
         obNotifOn: "Уведомления разрешены ✓",
         obNotifDenied: "Заблокировано — открыть Настройки",
         brewBtn: "Понятно ✓",
         skip: "Напомнить позже",
         errTitle: "Нужно одноразовое разрешение",
-        errBody: "CaffeLatte управляет сном через pmset — нужны права администратора. Вставь это один раз в Терминал и попробуй снова:",
+        errBody: "Clauffee управляет сном через pmset — нужны права администратора. Вставь это один раз в Терминал и попробуй снова:",
         retry: "Повторить",
         copy: "Копировать",
         copied: "Скопировано ✓",
@@ -426,9 +426,9 @@ extension Strings {
         funToasts: "Сообщение при запуске сессии",
         lidNotif: "Уведомление «С возвращением»",
         lidNotifSub: "Показывается при открытии крышки — напомнит снять блокировку сна",
-        launchLogin: "Держать CaffeLatte в строке меню",
+        launchLogin: "Держать Clauffee в строке меню",
         launchLoginSub: "Автоматически запускается при каждом входе",
-        about: "CaffeLatte v1.0 · Выход сохраняет настройки и всегда возвращает обычный сон"
+        about: "Clauffee v1.0 · Выход сохраняет настройки и всегда возвращает обычный сон"
     )
 }
 
