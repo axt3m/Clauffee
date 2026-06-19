@@ -2,21 +2,28 @@
 //  SettingsView.swift
 //  Clauffee
 //
-//  Réglages : Apparence (Lait/Expresso), Langue (EN/FR/RU),
-//  limite d'infusion 1–9 h avec avertissements chauffe,
-//  illimité global, arrêt auto Claude, bulles fun,
-//  notification capot, lancement à l'ouverture de session.
+//  Réglages : Apparence (Lait/Expresso), Langue (EN/FR/RU), temps maximum
+//  d'infusion (30 min → 9 h), Infusion éternelle, bulles, notification capot,
+//  lancement à l'ouverture de session.
+//
+//  Les bascules persistées sont liées directement au SettingsStore ; les
+//  actions à effet de bord passent par le SettingsViewModel.
 //
 
 import SwiftUI
 
 struct SettingsView: View {
 
-    @EnvironmentObject private var state: AppState
+    @EnvironmentObject private var settings: SettingsStore
+    @StateObject private var vm: SettingsViewModel
 
-    private var p: Palette { state.palette }
-    private var s: Strings { state.strings }
-    private var accent: Color { state.theme == .milk ? p.caramelDeep : p.crema }
+    init(vm: SettingsViewModel) {
+        _vm = StateObject(wrappedValue: vm)
+    }
+
+    private var p: Palette { settings.palette }
+    private var s: Strings { settings.strings }
+    private var accent: Color { settings.theme == .milk ? p.caramelDeep : p.crema }
 
     var body: some View {
         VStack(spacing: 8) {
@@ -26,8 +33,8 @@ struct SettingsView: View {
             miscCard
             about
         }
-        .animation(.easeOut(duration: 0.25), value: state.allUnlimited)
-        .animation(.easeOut(duration: 0.25), value: state.limitHours >= 5)
+        .animation(.easeOut(duration: 0.25), value: settings.allUnlimited)
+        .animation(.easeOut(duration: 0.25), value: settings.limitHours >= 5)
     }
 
     // MARK: - Header
@@ -39,7 +46,7 @@ struct SettingsView: View {
                 .foregroundStyle(p.text1)
             HStack {
                 Button {
-                    state.settingsOpen = false
+                    vm.close()
                 } label: {
                     HStack(spacing: 2) {
                         Image(systemName: "chevron.left")
@@ -66,7 +73,7 @@ struct SettingsView: View {
             segRow(title: s.appearance) {
                 SegPicker(
                     options: [(Theme.milk, s.themeMilk), (Theme.espresso, s.themeEsp)],
-                    selection: $state.theme,
+                    selection: $settings.theme,
                     palette: p
                 )
             }
@@ -74,7 +81,7 @@ struct SettingsView: View {
             segRow(title: s.language) {
                 SegPicker(
                     options: LanguagePref.allCases.map { ($0, $0.label) },
-                    selection: $state.languagePref,
+                    selection: $settings.languagePref,
                     palette: p
                 )
             }
@@ -93,7 +100,7 @@ struct SettingsView: View {
                             .font(.system(size: 12.5, weight: .semibold))
                             .foregroundStyle(p.text1)
                         Spacer()
-                        Text(state.limitLabel)
+                        Text(settings.limitLabel)
                             .font(.system(size: 12.5, weight: .bold))
                             .monospacedDigit()
                             .foregroundStyle(accent)
@@ -102,20 +109,20 @@ struct SettingsView: View {
                     // 30 min puis heures entières).
                     Slider(
                         value: Binding(
-                            get: { Double(AppState.limitOptions.firstIndex(of: state.limitHours) ?? 1) },
+                            get: { Double(SettingsStore.limitOptions.firstIndex(of: settings.limitHours) ?? 1) },
                             set: { idx in
-                                let i = max(0, min(AppState.limitOptions.count - 1, Int(idx.rounded())))
-                                state.limitHours = AppState.limitOptions[i]
+                                let i = max(0, min(SettingsStore.limitOptions.count - 1, Int(idx.rounded())))
+                                settings.limitHours = SettingsStore.limitOptions[i]
                             }
                         ),
-                        in: 0...Double(AppState.limitOptions.count - 1),
+                        in: 0...Double(SettingsStore.limitOptions.count - 1),
                         step: 1
                     )
                     .tint(p.caramelDeep)
                     .padding(.top, 2)
                     HStack(spacing: 0) {
-                        ForEach(AppState.limitOptions.indices, id: \.self) { i in
-                            Text(AppState.limitOptions[i] == 0.5 ? "½" : "\(Int(AppState.limitOptions[i]))")
+                        ForEach(SettingsStore.limitOptions.indices, id: \.self) { i in
+                            Text(SettingsStore.limitOptions[i] == 0.5 ? "½" : "\(Int(SettingsStore.limitOptions[i]))")
                                 .font(.system(size: 9))
                                 .foregroundStyle(p.text2)
                                 .frame(maxWidth: .infinity)
@@ -123,10 +130,10 @@ struct SettingsView: View {
                     }
                     .padding(.horizontal, 2)
                 }
-                .opacity(state.allUnlimited ? 0.35 : 1)
-                .disabled(state.allUnlimited)
+                .opacity(settings.allUnlimited ? 0.35 : 1)
+                .disabled(settings.allUnlimited)
 
-                if !state.allUnlimited && state.limitHours >= 5 {
+                if !settings.allUnlimited && settings.limitHours >= 5 {
                     caution(big: false)
                         .padding(.top, 8)
                         .transition(.opacity)
@@ -141,11 +148,11 @@ struct SettingsView: View {
                 title: s.allUnlimited,
                 sub: s.allUnlimitedSub,
                 isOn: Binding(
-                    get: { state.allUnlimited },
-                    set: { state.setAllUnlimited($0) }
+                    get: { settings.allUnlimited },
+                    set: { vm.setAllUnlimited($0) }
                 )
             )
-            if state.allUnlimited {
+            if settings.allUnlimited {
                 caution(big: true)
                     .padding(.horizontal, 12)
                     .padding(.bottom, 10)
@@ -158,11 +165,11 @@ struct SettingsView: View {
 
     private var miscCard: some View {
         card {
-            toggleRow(title: s.funToasts, sub: nil, isOn: $state.funToasts)
+            toggleRow(title: s.funToasts, sub: nil, isOn: $settings.funToasts)
             divider
-            toggleRow(title: s.lidNotif, sub: s.lidNotifSub, isOn: $state.lidNotification)
+            toggleRow(title: s.lidNotif, sub: s.lidNotifSub, isOn: $settings.lidNotification)
             divider
-            toggleRow(title: s.launchLogin, sub: s.launchLoginSub, isOn: $state.launchAtLogin)
+            toggleRow(title: s.launchLogin, sub: s.launchLoginSub, isOn: $settings.launchAtLogin)
         }
     }
 

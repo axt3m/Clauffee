@@ -2,9 +2,9 @@
 //  ClauffeeApp.swift
 //  Clauffee
 //
-//  Point d'entrée : MenuBarExtra (style .window), label tasse + timer,
-//  AppDelegate pour le mode accessory (pas d'icône Dock) et le filet
-//  de sécurité à la terminaison (disablesleep 0, flush des préférences).
+//  Point d'entrée : MenuBarExtra (style .window). Crée et injecte les objets
+//  partagés (SettingsStore, AppRouter, BrewViewModel). AppDelegate : mode
+//  accessory (pas d'icône Dock) + filet de sécurité à la terminaison.
 //
 
 import AppKit
@@ -14,14 +14,27 @@ import SwiftUI
 struct ClauffeeApp: App {
 
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    @StateObject private var state = AppState.shared
+
+    @StateObject private var settings: SettingsStore
+    @StateObject private var router: AppRouter
+    @StateObject private var brew: BrewViewModel
+
+    init() {
+        let settings = SettingsStore()
+        let router = AppRouter()
+        _settings = StateObject(wrappedValue: settings)
+        _router = StateObject(wrappedValue: router)
+        _brew = StateObject(wrappedValue: BrewViewModel(settings: settings, router: router))
+    }
 
     var body: some Scene {
         MenuBarExtra {
             PopoverRootView()
-                .environmentObject(state)
+                .environmentObject(settings)
+                .environmentObject(router)
+                .environmentObject(brew)
         } label: {
-            MenuBarLabel(isBrewing: state.isBrewing, elapsed: state.elapsed)
+            MenuBarLabel(isBrewing: brew.isBrewing, elapsed: brew.elapsed)
         }
         .menuBarExtraStyle(.window)
     }
@@ -54,7 +67,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         // La veille normale est TOUJOURS rétablie, quoi qu'il arrive.
-        AppState.emergencyCleanup()
+        BrewViewModel.emergencyCleanup()
         UserDefaults.standard.synchronize()
     }
 }

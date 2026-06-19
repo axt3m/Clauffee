@@ -1,5 +1,5 @@
 //
-//  MainView.swift
+//  BrewView.swift
 //  Clauffee
 //
 //  Vue principale du popover : header (tasse animée, statut, ⚙︎),
@@ -10,13 +10,15 @@
 import AppKit
 import SwiftUI
 
-struct MainView: View {
+struct BrewView: View {
 
-    @EnvironmentObject private var state: AppState
+    @EnvironmentObject private var brew: BrewViewModel
+    @EnvironmentObject private var settings: SettingsStore
+    @EnvironmentObject private var router: AppRouter
     @State private var copyConfirmed = false
 
-    private var p: Palette { state.palette }
-    private var s: Strings { state.strings }
+    private var p: Palette { settings.palette }
+    private var s: Strings { settings.strings }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -24,8 +26,8 @@ struct MainView: View {
             card
             footer
         }
-        .animation(.smooth(duration: 0.5), value: state.isBrewing)
-        .animation(.easeOut(duration: 0.25), value: state.sudoersError)
+        .animation(.smooth(duration: 0.5), value: brew.isBrewing)
+        .animation(.easeOut(duration: 0.25), value: brew.sudoersError)
     }
 
     // MARK: - Header
@@ -34,15 +36,15 @@ struct MainView: View {
         HStack(alignment: .center, spacing: 12) {
             ZStack {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(LinearGradient(colors: state.isBrewing ? p.badgeOn : p.badgeOff,
+                    .fill(LinearGradient(colors: brew.isBrewing ? p.badgeOn : p.badgeOff,
                                          startPoint: .topLeading, endPoint: .bottomTrailing))
                     .overlay(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
                             .strokeBorder(p.cardBorder, lineWidth: 1)
                     )
-                    .animation(.easeInOut(duration: 0.4), value: state.isBrewing)
-                CupView(isBrewing: state.isBrewing,
-                        drainTrigger: state.drainTrigger,
+                    .animation(.easeInOut(duration: 0.4), value: brew.isBrewing)
+                CupView(isBrewing: brew.isBrewing,
+                        drainTrigger: brew.drainTrigger,
                         palette: p)
                     .frame(width: 40, height: 40)
             }
@@ -52,10 +54,10 @@ struct MainView: View {
                 Text("Clauffee")
                     .font(.system(size: 16, weight: .heavy, design: .rounded))
                     .foregroundStyle(p.text1)
-                Text(state.isBrewing ? s.statusOn : s.statusOff)
-                    .font(.system(size: 12, weight: state.isBrewing ? .semibold : .regular))
-                    .foregroundStyle(state.isBrewing
-                                     ? (state.theme == .milk ? p.caramelDeep : p.crema)
+                Text(brew.isBrewing ? s.statusOn : s.statusOff)
+                    .font(.system(size: 12, weight: brew.isBrewing ? .semibold : .regular))
+                    .foregroundStyle(brew.isBrewing
+                                     ? (settings.theme == .milk ? p.caramelDeep : p.crema)
                                      : p.text2)
                     .lineLimit(2)
             }
@@ -65,7 +67,7 @@ struct MainView: View {
         .padding(.bottom, 14)
         .overlay(alignment: .topTrailing) {
             Button {
-                state.settingsOpen = true
+                router.settingsOpen = true
             } label: {
                 Image(systemName: "gearshape.fill")
                     .font(.system(size: 14))
@@ -82,11 +84,11 @@ struct MainView: View {
 
     private var card: some View {
         VStack(spacing: 0) {
-            if state.sudoersError {
+            if brew.sudoersError {
                 errorCard
             } else {
                 brewRow
-                if state.isBrewing {
+                if brew.isBrewing {
                     divider
                     timerRow
                     divider
@@ -112,28 +114,28 @@ struct MainView: View {
     private var brewRow: some View {
         HStack(spacing: 11) {
             VStack(alignment: .leading, spacing: 1) {
-                // Suffixe « · 2 h / Illimité » uniquement à l'arrêt —
+                // Suffixe « · 1 h / Illimité » uniquement à l'arrêt —
                 // pendant l'infusion, l'info vit dans la ligne minuteur.
-                if state.isBrewing {
+                if brew.isBrewing {
                     Text(s.brewingTitle)
                         .font(.system(size: 13.5, weight: .semibold))
                         .foregroundStyle(p.text1)
                 } else {
                     (Text(s.brewTitle).foregroundColor(p.text1)
-                     + Text(" · \(state.limitSuffix)")
+                     + Text(" · \(brew.limitSuffix)")
                         .foregroundColor(p.text2)
                         .fontWeight(.regular))
                         .font(.system(size: 13.5, weight: .semibold))
                 }
-                Text(state.isBrewing ? s.brewSubOn : s.brewSubOff)
+                Text(brew.isBrewing ? s.brewSubOn : s.brewSubOff)
                     .font(.system(size: 11.5))
                     .foregroundStyle(p.text2)
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: 8)
             Toggle("", isOn: Binding(
-                get: { state.isBrewing },
-                set: { _ in state.toggleBrew() }
+                get: { brew.isBrewing },
+                set: { _ in brew.toggleBrew() }
             ))
             .labelsHidden()
             .toggleStyle(CaramelToggleStyle(palette: p))
@@ -149,13 +151,13 @@ struct MainView: View {
                 .frame(width: 24, height: 24)
                 .overlay(Text("⏱").font(.system(size: 12)))
             VStack(alignment: .leading, spacing: 1) {
-                Text(s.awake(formatClock(state.elapsed)))
+                Text(s.awake(formatClock(brew.elapsed)))
                     .font(.system(size: 13.5, weight: .semibold))
                     .monospacedDigit()
                     .foregroundStyle(p.text1)
-                Text(state.effectiveUnlimited
+                Text(brew.effectiveUnlimited
                      ? s.noLimit
-                     : s.autoOff(formatClock(state.remaining)))
+                     : s.autoOff(formatClock(brew.remaining)))
                     .font(.system(size: 11.5))
                     .monospacedDigit()
                     .foregroundStyle(p.text2)
@@ -170,12 +172,12 @@ struct MainView: View {
 
     private var sessionsRow: some View {
         HStack(spacing: 11) {
-            PulsingDot(active: state.claudeSessionCount > 0)
+            PulsingDot(active: brew.claudeSessionCount > 0)
             VStack(alignment: .leading, spacing: 1) {
-                Text(s.sessions(state.claudeSessionCount))
+                Text(s.sessions(brew.claudeSessionCount))
                     .font(.system(size: 13.5, weight: .semibold))
                     .foregroundStyle(p.text1)
-                Text(state.claudeSessionCount > 0 ? s.sessionsSubActive : s.sessionsSubIdle)
+                Text(brew.claudeSessionCount > 0 ? s.sessionsSubActive : s.sessionsSubIdle)
                     .font(.system(size: 11.5))
                     .foregroundStyle(p.text2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -205,8 +207,6 @@ struct MainView: View {
                 .padding(.bottom, 10)
 
             VStack(alignment: .leading, spacing: 7) {
-                // En-tête du bloc : libellé + Copy, séparés de la commande
-                // pour ne jamais recouvrir le texte.
                 HStack(spacing: 6) {
                     Image(systemName: "terminal")
                         .font(.system(size: 10, weight: .semibold))
@@ -243,7 +243,7 @@ struct MainView: View {
             .background(RoundedRectangle(cornerRadius: 9, style: .continuous).fill(p.kbdBg))
 
             Button {
-                state.retryAfterSudoersFix()
+                brew.retryAfterSudoersFix()
             } label: {
                 Text(s.retry)
                     .font(.system(size: 12.5, weight: .bold))
@@ -262,15 +262,15 @@ struct MainView: View {
 
     private var footer: some View {
         HStack(spacing: 8) {
-            if state.allUnlimited {
+            if settings.allUnlimited {
                 // Illimité global : pas de toggle, juste le texte.
                 Text(s.unlimitedFooter)
                     .font(.system(size: 11.5))
                     .foregroundStyle(p.text2)
             } else {
                 Toggle("", isOn: Binding(
-                    get: { state.sessionUnlimited },
-                    set: { _ in state.toggleSessionUnlimited() }
+                    get: { brew.sessionUnlimited },
+                    set: { _ in brew.toggleSessionUnlimited() }
                 ))
                 .labelsHidden()
                 .toggleStyle(CaramelToggleStyle(palette: p, small: true))
@@ -284,7 +284,7 @@ struct MainView: View {
             Spacer(minLength: 8)
 
             Button {
-                state.quit()
+                brew.quit()
             } label: {
                 HStack(spacing: 5) {
                     Image(systemName: "power")

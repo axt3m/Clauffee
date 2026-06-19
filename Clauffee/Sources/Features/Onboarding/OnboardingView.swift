@@ -1,22 +1,25 @@
 //
-//  OnboardingSheet.swift
+//  OnboardingView.swift
 //  Clauffee
 //
 //  Premier « Lancer le café » : trois vérifications uniques
 //  (app Claude iPhone, même compte, /config) + l'encart qui explique
-//  la limite par défaut, l'arrêt auto Claude et le comportement
-//  à la réouverture du capot.
+//  la limite par défaut et le comportement à la réouverture du capot.
 //
 
 import SwiftUI
 
-struct OnboardingOverlay: View {
+struct OnboardingView: View {
 
-    @EnvironmentObject private var state: AppState
-    @State private var remoteConfirmed = false
+    @EnvironmentObject private var settings: SettingsStore
+    @StateObject private var vm: OnboardingViewModel
 
-    private var p: Palette { state.palette }
-    private var s: Strings { state.strings }
+    init(vm: OnboardingViewModel) {
+        _vm = StateObject(wrappedValue: vm)
+    }
+
+    private var p: Palette { settings.palette }
+    private var s: Strings { settings.strings }
 
     var body: some View {
         ZStack {
@@ -50,10 +53,10 @@ struct OnboardingOverlay: View {
             divider
             check(3, s.ob3t, s.ob3s)
 
-            // Encart : limite par défaut + arrêt auto Claude + capot
+            // Encart : limite par défaut + comportement capot
             HStack(alignment: .top, spacing: 8) {
                 Text("⏱").font(.system(size: 13))
-                Text(s.obNote(state.limitLabel))
+                Text(s.obNote(settings.limitLabel))
                     .font(.system(size: 11))
                     .foregroundStyle(p.text2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -72,14 +75,14 @@ struct OnboardingOverlay: View {
             .padding(.top, 11)
 
             // Confirmation explicite que /config est bien réglé —
-            // débloque le bouton « infuser ».
+            // débloque le bouton.
             Button {
-                remoteConfirmed.toggle()
+                vm.remoteConfirmed.toggle()
             } label: {
                 HStack(alignment: .top, spacing: 8) {
-                    Image(systemName: remoteConfirmed ? "checkmark.square.fill" : "square")
+                    Image(systemName: vm.remoteConfirmed ? "checkmark.square.fill" : "square")
                         .font(.system(size: 15))
-                        .foregroundStyle(remoteConfirmed ? p.caramel : p.text2)
+                        .foregroundStyle(vm.remoteConfirmed ? p.caramel : p.text2)
                     Text(s.obConfirm)
                         .font(.system(size: 11.5, weight: .medium))
                         .foregroundStyle(p.text1)
@@ -92,7 +95,7 @@ struct OnboardingOverlay: View {
             .padding(.top, 12)
 
             Button {
-                state.completeOnboarding(start: true)
+                vm.complete(start: true)
             } label: {
                 Text(s.brewBtn)
                     .font(.system(size: 13.5, weight: .heavy))
@@ -101,16 +104,16 @@ struct OnboardingOverlay: View {
                     .padding(.vertical, 10)
                     .background(p.caramelGradient,
                                 in: RoundedRectangle(cornerRadius: 11, style: .continuous))
-                    .shadow(color: p.caramelDeep.opacity(remoteConfirmed ? 0.4 : 0), radius: 7, y: 4)
+                    .shadow(color: p.caramelDeep.opacity(vm.remoteConfirmed ? 0.4 : 0), radius: 7, y: 4)
             }
             .buttonStyle(.plain)
-            .disabled(!remoteConfirmed)
-            .opacity(remoteConfirmed ? 1 : 0.4)
-            .animation(.easeOut(duration: 0.2), value: remoteConfirmed)
+            .disabled(!vm.remoteConfirmed)
+            .opacity(vm.remoteConfirmed ? 1 : 0.4)
+            .animation(.easeOut(duration: 0.2), value: vm.remoteConfirmed)
             .padding(.top, 12)
 
             Button {
-                state.completeOnboarding(start: false)
+                vm.complete(start: false)
             } label: {
                 Text(s.skip)
                     .font(.system(size: 11.5, weight: .semibold))
