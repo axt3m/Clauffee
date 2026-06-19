@@ -17,6 +17,10 @@ import IOKit
 
 final class LidMonitor {
 
+    private struct Constants {
+        static let defaultInterval: TimeInterval = 2
+    }
+
     /// Appelé sur le main thread quand le capot passe de fermé à ouvert.
     var onLidOpened: (() -> Void)?
 
@@ -32,7 +36,7 @@ final class LidMonitor {
 
     var isRunning: Bool { timer != nil }
 
-    func start(interval: TimeInterval = 2) {
+    func start(interval: TimeInterval = Constants.defaultInterval) {
         guard timer == nil else { return }
         lastClosed = Self.clamshellClosed()
         let t = Timer(timeInterval: interval, repeats: true) { [weak self] _ in

@@ -11,12 +11,16 @@ import Foundation
 
 final class ClaudeSessionMonitor {
 
+    private struct Constants {
+        static let defaultInterval: TimeInterval = 5
+    }
+
     /// Appelé sur le main thread avec le nombre de process détectés.
     var onCount: ((Int) -> Void)?
 
     private var timer: Timer?
 
-    func start(interval: TimeInterval = 5) {
+    func start(interval: TimeInterval = Constants.defaultInterval) {
         stop()
         poll()
         let t = Timer(timeInterval: interval, repeats: true) { [weak self] _ in

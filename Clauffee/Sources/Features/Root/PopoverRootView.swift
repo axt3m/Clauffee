@@ -9,6 +9,15 @@
 
 import SwiftUI
 
+private struct Constants {
+    static let popoverWidth: CGFloat = 312
+    static let tintOpacity: Double = 0.72
+    static let contentPadding: CGFloat = 16
+    static let contentTopPadding: CGFloat = 2
+    static let settingsAnimation: Double = 0.22
+    static let onboardingAnimation: Double = 0.3
+}
+
 struct PopoverRootView: View {
 
     @EnvironmentObject private var settings: SettingsStore
@@ -26,23 +35,23 @@ struct PopoverRootView: View {
                         .transition(.opacity)
                 }
             }
-            .padding(16)
-            .padding(.top, 2)
+            .padding(Constants.contentPadding)
+            .padding(.top, Constants.contentTopPadding)
 
             if router.showOnboarding {
                 OnboardingView(vm: OnboardingViewModel(settings: settings, router: router))
             }
         }
-        .frame(width: 312)
+        .frame(width: Constants.popoverWidth)
         .background(
             // Vibrancy « menu » + voile teinté léger : on garde l'identité
             // crème/expresso tout en laissant transparaître le flou du bureau.
             VisualEffectView()
-                .overlay(settings.palette.popBg.opacity(0.72))
+                .overlay(settings.palette.popBg.opacity(Constants.tintOpacity))
                 .ignoresSafeArea()
         )
         .preferredColorScheme(settings.theme == .milk ? .light : .dark)
-        .animation(.easeOut(duration: 0.22), value: router.settingsOpen)
-        .animation(.easeOut(duration: 0.3), value: router.showOnboarding)
+        .animation(.easeOut(duration: Constants.settingsAnimation), value: router.settingsOpen)
+        .animation(.easeOut(duration: Constants.onboardingAnimation), value: router.showOnboarding)
     }
 }

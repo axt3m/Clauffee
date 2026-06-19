@@ -42,15 +42,21 @@ struct ClauffeeApp: App {
 
 /// Tasse (vide/pleine) + temps de brew dans la barre de menus.
 struct MenuBarLabel: View {
+
+    private struct Constants {
+        static let spacing: CGFloat = 3
+        static let timerFontSize: CGFloat = 11.5
+    }
+
     let isBrewing: Bool
     let elapsed: TimeInterval
 
     var body: some View {
-        HStack(spacing: 3) {
+        HStack(spacing: Constants.spacing) {
             Image(systemName: isBrewing ? "cup.and.saucer.fill" : "cup.and.saucer")
             if isBrewing {
                 Text(formatClock(elapsed))
-                    .font(.system(size: 11.5, weight: .semibold))
+                    .font(.system(size: Constants.timerFontSize, weight: .semibold))
                     .monospacedDigit()
             }
         }

@@ -14,6 +14,12 @@ import SwiftUI
 @MainActor
 final class BrewViewModel: ObservableObject {
 
+    private struct Constants {
+        static let secondsPerHour: TimeInterval = 3600
+        static let heatThresholdHours: Double = 5      // ≥ : avertissement chauffe
+        static let tickInterval: TimeInterval = 1
+    }
+
     enum EndReason {
         case manual      // toggle, footer, notification « Arrêter »
         case autoOff     // limite d'infusion atteinte
@@ -61,7 +67,7 @@ final class BrewViewModel: ObservableObject {
     // MARK: Dérivés
 
     var effectiveUnlimited: Bool { settings.allUnlimited || sessionUnlimited }
-    var remaining: TimeInterval { max(0, settings.limitHours * 3600 - elapsed) }
+    var remaining: TimeInterval { max(0, settings.limitHours * Constants.secondsPerHour - elapsed) }
 
     /// Suffixe gris « · 1 h / Illimité » (affiché uniquement à l'arrêt).
     var limitSuffix: String { effectiveUnlimited ? settings.strings.unlimitedWord : settings.limitLabel }
@@ -133,7 +139,7 @@ final class BrewViewModel: ObservableObject {
             lidMonitor.start()
             Notifier.shared.requestPermissionIfNeeded()
 
-            if effectiveUnlimited || settings.limitHours >= 5 {
+            if effectiveUnlimited || settings.limitHours >= Constants.heatThresholdHours {
                 showHeatToast()
             } else if settings.funToasts {
                 showFunToast()
@@ -202,7 +208,7 @@ final class BrewViewModel: ObservableObject {
 
     private func startTick() {
         stopTick()
-        let t = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
+        let t = Timer(timeInterval: Constants.tickInterval, repeats: true) { [weak self] _ in
             MainActor.assumeIsolated { self?.onTick() }
         }
         RunLoop.main.add(t, forMode: .common)

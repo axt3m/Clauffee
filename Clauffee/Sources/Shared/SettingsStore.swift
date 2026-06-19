@@ -16,6 +16,11 @@ import SwiftUI
 @MainActor
 final class SettingsStore: ObservableObject {
 
+    private struct Constants {
+        static let halfHour: Double = 0.5      // valeur « 30 min »
+        static let defaultHours: Double = 1
+    }
+
     // MARK: Réglages persistés (flush au Quitter)
 
     @Published var theme: Theme { didSet { defaults.set(theme.rawValue, forKey: Keys.theme) } }
@@ -48,7 +53,7 @@ final class SettingsStore: ObservableObject {
     var palette: Palette { Palette.for(theme) }
 
     /// Étiquette lisible de la limite : « 30 min » ou « N h ».
-    var limitLabel: String { limitHours == 0.5 ? "30 min" : "\(Int(limitHours)) h" }
+    var limitLabel: String { limitHours == Constants.halfHour ? "30 min" : "\(Int(limitHours)) h" }
 
     // MARK: Privé
 
@@ -74,7 +79,7 @@ final class SettingsStore: ObservableObject {
         theme = Theme(rawValue: store.string(forKey: Keys.theme) ?? "") ?? .milk
         languagePref = LanguagePref(rawValue: store.string(forKey: Keys.language) ?? "") ?? .auto
         let storedLimit = store.double(forKey: Keys.limitHours)
-        limitHours = Self.limitOptions.contains(storedLimit) ? storedLimit : 1
+        limitHours = Self.limitOptions.contains(storedLimit) ? storedLimit : Constants.defaultHours
         allUnlimited = store.bool(forKey: Keys.allUnlimited)
         funToasts = store.object(forKey: Keys.funToasts) as? Bool ?? true
         lidNotification = store.object(forKey: Keys.lidNotification) as? Bool ?? true

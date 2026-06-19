@@ -9,6 +9,74 @@
 
 import SwiftUI
 
+private struct Constants {
+    static let scrimOpacity: Double = 0.35
+
+    // Titre / intro
+    static let titleFontSize: CGFloat = 14
+    static let introFontSize: CGFloat = 12
+    static let introTopPadding: CGFloat = 5
+    static let introBottomPadding: CGFloat = 10
+
+    // Encart note
+    static let noteSpacing: CGFloat = 8
+    static let noteEmojiFontSize: CGFloat = 13
+    static let noteFontSize: CGFloat = 11
+    static let noteVPadding: CGFloat = 9
+    static let noteHPadding: CGFloat = 11
+    static let noteFillOpacity: Double = 0.13
+    static let noteBorderOpacity: Double = 0.25
+    static let noteBorderWidth: CGFloat = 1
+    static let noteCorner: CGFloat = 10
+    static let noteTopPadding: CGFloat = 11
+
+    // Case de confirmation
+    static let confirmSpacing: CGFloat = 8
+    static let confirmIconFontSize: CGFloat = 15
+    static let confirmFontSize: CGFloat = 11.5
+    static let confirmTopPadding: CGFloat = 12
+
+    // Bouton principal
+    static let brewFontSize: CGFloat = 13.5
+    static let brewVPadding: CGFloat = 10
+    static let brewCorner: CGFloat = 11
+    static let brewShadowOpacity: Double = 0.4
+    static let brewShadowRadius: CGFloat = 7
+    static let brewShadowY: CGFloat = 4
+    static let brewTopPadding: CGFloat = 12
+    static let brewDisabledOpacity: Double = 0.4
+    static let brewAnimation: Double = 0.2
+
+    // Skip
+    static let skipFontSize: CGFloat = 11.5
+    static let skipPadding: CGFloat = 4
+    static let skipTopPadding: CGFloat = 5
+
+    // Feuille
+    static let sheetTopInset: CGFloat = 22
+    static let sheetLeadingInset: CGFloat = 20
+    static let sheetBottomInset: CGFloat = 14
+    static let sheetTrailingInset: CGFloat = 20
+    static let sheetCorner: CGFloat = 20
+    static let sheetBorderWidth: CGFloat = 1
+    static let sheetTintOpacity: Double = 0.72
+    static let sheetShadowOpacity: Double = 0.35
+    static let sheetShadowRadius: CGFloat = 22
+    static let sheetShadowY: CGFloat = 12
+    static let sheetOuterPadding: CGFloat = 12
+
+    // Divider + checks
+    static let dividerHeight: CGFloat = 1
+    static let checkSpacing: CGFloat = 11
+    static let checkCircleSize: CGFloat = 22
+    static let checkNumberFontSize: CGFloat = 11.5
+    static let checkTitleFontSize: CGFloat = 12.5
+    static let checkSubFontSize: CGFloat = 11.5
+    static let checkVPadding: CGFloat = 9
+    static let checkCircleTopPadding: CGFloat = 1
+    static let checkTextSpacing: CGFloat = 2
+}
+
 struct OnboardingView: View {
 
     @EnvironmentObject private var settings: SettingsStore
@@ -23,7 +91,7 @@ struct OnboardingView: View {
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.35)
+            Color.black.opacity(Constants.scrimOpacity)
                 .contentShape(Rectangle())
                 .onTapGesture { } // bloque les clics vers le fond
 
@@ -35,17 +103,17 @@ struct OnboardingView: View {
     private var sheet: some View {
         VStack(spacing: 0) {
             Text(s.obTitle)
-                .font(.system(size: 14, weight: .heavy, design: .rounded))
+                .font(.system(size: Constants.titleFontSize, weight: .heavy, design: .rounded))
                 .foregroundStyle(p.text1)
                 .multilineTextAlignment(.center)
 
             Text(s.obIntro)
-                .font(.system(size: 12))
+                .font(.system(size: Constants.introFontSize))
                 .foregroundStyle(p.text2)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, 5)
-                .padding(.bottom, 10)
+                .padding(.top, Constants.introTopPadding)
+                .padding(.bottom, Constants.introBottomPadding)
 
             check(1, s.ob1t, s.ob1s)
             divider
@@ -54,37 +122,37 @@ struct OnboardingView: View {
             check(3, s.ob3t, s.ob3s)
 
             // Encart : limite par défaut + comportement capot
-            HStack(alignment: .top, spacing: 8) {
-                Text("⏱").font(.system(size: 13))
+            HStack(alignment: .top, spacing: Constants.noteSpacing) {
+                Text("⏱").font(.system(size: Constants.noteEmojiFontSize))
                 Text(s.obNote(settings.limitLabel))
-                    .font(.system(size: 11))
+                    .font(.system(size: Constants.noteFontSize))
                     .foregroundStyle(p.text2)
                     .fixedSize(horizontal: false, vertical: true)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, 9)
-            .padding(.horizontal, 11)
+            .padding(.vertical, Constants.noteVPadding)
+            .padding(.horizontal, Constants.noteHPadding)
             .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(p.caramel.opacity(0.13))
+                RoundedRectangle(cornerRadius: Constants.noteCorner, style: .continuous)
+                    .fill(p.caramel.opacity(Constants.noteFillOpacity))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .strokeBorder(p.caramel.opacity(0.25), lineWidth: 1)
+                        RoundedRectangle(cornerRadius: Constants.noteCorner, style: .continuous)
+                            .strokeBorder(p.caramel.opacity(Constants.noteBorderOpacity), lineWidth: Constants.noteBorderWidth)
                     )
             )
-            .padding(.top, 11)
+            .padding(.top, Constants.noteTopPadding)
 
             // Confirmation explicite que /config est bien réglé —
             // débloque le bouton.
             Button {
                 vm.remoteConfirmed.toggle()
             } label: {
-                HStack(alignment: .top, spacing: 8) {
+                HStack(alignment: .top, spacing: Constants.confirmSpacing) {
                     Image(systemName: vm.remoteConfirmed ? "checkmark.square.fill" : "square")
-                        .font(.system(size: 15))
+                        .font(.system(size: Constants.confirmIconFontSize))
                         .foregroundStyle(vm.remoteConfirmed ? p.caramel : p.text2)
                     Text(s.obConfirm)
-                        .font(.system(size: 11.5, weight: .medium))
+                        .font(.system(size: Constants.confirmFontSize, weight: .medium))
                         .foregroundStyle(p.text1)
                         .fixedSize(horizontal: false, vertical: true)
                     Spacer(minLength: 0)
@@ -92,80 +160,83 @@ struct OnboardingView: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .padding(.top, 12)
+            .padding(.top, Constants.confirmTopPadding)
 
             Button {
                 vm.complete(start: true)
             } label: {
                 Text(s.brewBtn)
-                    .font(.system(size: 13.5, weight: .heavy))
+                    .font(.system(size: Constants.brewFontSize, weight: .heavy))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 10)
+                    .padding(.vertical, Constants.brewVPadding)
                     .background(p.caramelGradient,
-                                in: RoundedRectangle(cornerRadius: 11, style: .continuous))
-                    .shadow(color: p.caramelDeep.opacity(vm.remoteConfirmed ? 0.4 : 0), radius: 7, y: 4)
+                                in: RoundedRectangle(cornerRadius: Constants.brewCorner, style: .continuous))
+                    .shadow(color: p.caramelDeep.opacity(vm.remoteConfirmed ? Constants.brewShadowOpacity : 0),
+                            radius: Constants.brewShadowRadius, y: Constants.brewShadowY)
             }
             .buttonStyle(.plain)
             .disabled(!vm.remoteConfirmed)
-            .opacity(vm.remoteConfirmed ? 1 : 0.4)
-            .animation(.easeOut(duration: 0.2), value: vm.remoteConfirmed)
-            .padding(.top, 12)
+            .opacity(vm.remoteConfirmed ? 1 : Constants.brewDisabledOpacity)
+            .animation(.easeOut(duration: Constants.brewAnimation), value: vm.remoteConfirmed)
+            .padding(.top, Constants.brewTopPadding)
 
             Button {
                 vm.complete(start: false)
             } label: {
                 Text(s.skip)
-                    .font(.system(size: 11.5, weight: .semibold))
+                    .font(.system(size: Constants.skipFontSize, weight: .semibold))
                     .foregroundStyle(p.text2)
-                    .padding(4)
+                    .padding(Constants.skipPadding)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .padding(.top, 5)
+            .padding(.top, Constants.skipTopPadding)
         }
-        .padding(EdgeInsets(top: 22, leading: 20, bottom: 14, trailing: 20))
+        .padding(EdgeInsets(top: Constants.sheetTopInset, leading: Constants.sheetLeadingInset,
+                            bottom: Constants.sheetBottomInset, trailing: Constants.sheetTrailingInset))
         .background(
             // Feuille translucide « menu » : vibrancy + voile teinté, découpée
             // au rayon de la carte, bordure et ombre conservées.
             VisualEffectView(material: .popover)
-                .overlay(p.popBg.opacity(0.72))
-                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                .overlay(p.popBg.opacity(Constants.sheetTintOpacity))
+                .clipShape(RoundedRectangle(cornerRadius: Constants.sheetCorner, style: .continuous))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .strokeBorder(p.cardBorder, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: Constants.sheetCorner, style: .continuous)
+                        .strokeBorder(p.cardBorder, lineWidth: Constants.sheetBorderWidth)
                 )
-                .shadow(color: .black.opacity(0.35), radius: 22, y: 12)
+                .shadow(color: .black.opacity(Constants.sheetShadowOpacity),
+                        radius: Constants.sheetShadowRadius, y: Constants.sheetShadowY)
         )
-        .padding(12)
+        .padding(Constants.sheetOuterPadding)
     }
 
     private var divider: some View {
-        Rectangle().fill(p.divider).frame(height: 1)
+        Rectangle().fill(p.divider).frame(height: Constants.dividerHeight)
     }
 
     private func check(_ number: Int, _ title: String, _ sub: String) -> some View {
-        HStack(alignment: .top, spacing: 11) {
+        HStack(alignment: .top, spacing: Constants.checkSpacing) {
             Circle()
                 .fill(p.caramelGradient)
-                .frame(width: 22, height: 22)
+                .frame(width: Constants.checkCircleSize, height: Constants.checkCircleSize)
                 .overlay(
                     Text("\(number)")
-                        .font(.system(size: 11.5, weight: .heavy))
+                        .font(.system(size: Constants.checkNumberFontSize, weight: .heavy))
                         .foregroundStyle(.white)
                 )
-                .padding(.top, 1)
-            VStack(alignment: .leading, spacing: 2) {
+                .padding(.top, Constants.checkCircleTopPadding)
+            VStack(alignment: .leading, spacing: Constants.checkTextSpacing) {
                 Text(title)
-                    .font(.system(size: 12.5, weight: .semibold))
+                    .font(.system(size: Constants.checkTitleFontSize, weight: .semibold))
                     .foregroundStyle(p.text1)
                 Text(sub)
-                    .font(.system(size: 11.5))
+                    .font(.system(size: Constants.checkSubFontSize))
                     .foregroundStyle(p.text2)
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer(minLength: 0)
         }
-        .padding(.vertical, 9)
+        .padding(.vertical, Constants.checkVPadding)
     }
 }

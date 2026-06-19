@@ -113,12 +113,26 @@ struct Palette {
 // MARK: - Toggle caramel
 
 struct CaramelToggleStyle: ToggleStyle {
+
+    private struct Constants {
+        static let width: CGFloat = 46
+        static let height: CGFloat = 27
+        static let smallWidth: CGFloat = 32
+        static let smallHeight: CGFloat = 19
+        static let knobPadding: CGFloat = 2
+        static let knobShadowOpacity: Double = 0.3
+        static let knobShadowRadius: CGFloat = 1.5
+        static let knobShadowY: CGFloat = 1
+        static let springDuration: Double = 0.28
+        static let springBounce: Double = 0.25
+    }
+
     let palette: Palette
     var small = false
 
     func makeBody(configuration: Configuration) -> some View {
-        let width: CGFloat = small ? 32 : 46
-        let height: CGFloat = small ? 19 : 27
+        let width: CGFloat = small ? Constants.smallWidth : Constants.width
+        let height: CGFloat = small ? Constants.smallHeight : Constants.height
 
         Button {
             configuration.isOn.toggle()
@@ -131,10 +145,12 @@ struct CaramelToggleStyle: ToggleStyle {
                 .overlay(alignment: configuration.isOn ? .trailing : .leading) {
                     Circle()
                         .fill(.white)
-                        .shadow(color: .black.opacity(0.3), radius: 1.5, y: 1)
-                        .padding(2)
+                        .shadow(color: .black.opacity(Constants.knobShadowOpacity),
+                                radius: Constants.knobShadowRadius, y: Constants.knobShadowY)
+                        .padding(Constants.knobPadding)
                 }
-                .animation(.spring(duration: 0.28, bounce: 0.25), value: configuration.isOn)
+                .animation(.spring(duration: Constants.springDuration, bounce: Constants.springBounce),
+                           value: configuration.isOn)
         }
         .buttonStyle(.plain)
     }

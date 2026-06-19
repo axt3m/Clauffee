@@ -10,6 +10,28 @@
 import AppKit
 import SwiftUI
 
+private struct Constants {
+    // Timings
+    static let appearDuration: TimeInterval = 0.25
+    static let fadeDuration: TimeInterval = 2.5
+    static let holdDuration: TimeInterval = 3.8   // avant de lancer le fondu
+    // Position
+    static let topInset: CGFloat = 44             // sous l'encoche
+    // Bulle
+    static let bubbleWidth: CGFloat = 300
+    static let hSpacing: CGFloat = 9
+    static let emojiFontSize: CGFloat = 16
+    static let textFontSize: CGFloat = 12.5
+    static let leadingPadding: CGFloat = 13
+    static let trailingPadding: CGFloat = 17
+    static let verticalPadding: CGFloat = 10
+    static let outerPadding: CGFloat = 12         // marge pour l'ombre
+    static let borderWidth: CGFloat = 1
+    static let shadowOpacity: Double = 0.30
+    static let shadowRadius: CGFloat = 16
+    static let shadowY: CGFloat = 8
+}
+
 @MainActor
 final class ToastPresenter {
 
@@ -55,14 +77,14 @@ final class ToastPresenter {
             ?? NSScreen.main ?? NSScreen.screens.first
         if let screen = primary {
             let x = screen.frame.midX - size.width / 2
-            let topY = screen.frame.maxY - 44   // centré, juste sous l'encoche
+            let topY = screen.frame.maxY - Constants.topInset   // centré, juste sous l'encoche
             panel.setFrameTopLeftPoint(NSPoint(x: x, y: topY))
         }
 
         panel.alphaValue = 0
         panel.orderFrontRegardless()
         NSAnimationContext.runAnimationGroup { ctx in
-            ctx.duration = 0.25
+            ctx.duration = Constants.appearDuration
             panel.animator().alphaValue = 1
         }
 
@@ -70,7 +92,7 @@ final class ToastPresenter {
 
         let fade = DispatchWorkItem { [weak self, weak panel] in
             NSAnimationContext.runAnimationGroup({ ctx in
-                ctx.duration = 2.5
+                ctx.duration = Constants.fadeDuration
                 panel?.animator().alphaValue = 0
             }, completionHandler: {
                 panel?.orderOut(nil)
@@ -82,7 +104,7 @@ final class ToastPresenter {
             })
         }
         fadeWorkItem = fade
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.8, execute: fade)
+        DispatchQueue.main.asyncAfter(deadline: .now() + Constants.holdDuration, execute: fade)
     }
 
     func dismiss() {
@@ -101,26 +123,26 @@ struct ToastView: View {
     let palette: Palette
 
     var body: some View {
-        HStack(spacing: 9) {
-            Text(emoji).font(.system(size: 16))
+        HStack(spacing: Constants.hSpacing) {
+            Text(emoji).font(.system(size: Constants.emojiFontSize))
             Text(text)
-                .font(.system(size: 12.5, weight: .semibold))
+                .font(.system(size: Constants.textFontSize, weight: .semibold))
                 .foregroundStyle(palette.text1)
                 .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 0)
         }
-        .padding(.leading, 13)
-        .padding(.trailing, 17)
-        .padding(.vertical, 10)
+        .padding(.leading, Constants.leadingPadding)
+        .padding(.trailing, Constants.trailingPadding)
+        .padding(.vertical, Constants.verticalPadding)
         // Largeur fixe : la bulle ne change jamais de taille ni de position.
-        .frame(width: 300, alignment: .leading)
+        .frame(width: Constants.bubbleWidth, alignment: .leading)
         .background(
             Capsule()
                 .fill(palette.popBg)
-                .overlay(Capsule().strokeBorder(palette.cardBorder, lineWidth: 1))
-                .shadow(color: .black.opacity(0.30), radius: 16, y: 8)
+                .overlay(Capsule().strokeBorder(palette.cardBorder, lineWidth: Constants.borderWidth))
+                .shadow(color: .black.opacity(Constants.shadowOpacity), radius: Constants.shadowRadius, y: Constants.shadowY)
         )
-        .padding(12) // marge pour l'ombre dans le panel
+        .padding(Constants.outerPadding) // marge pour l'ombre dans le panel
     }
 }
