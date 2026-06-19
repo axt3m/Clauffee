@@ -53,7 +53,7 @@ struct OnboardingOverlay: View {
             // Encart : limite par défaut + arrêt auto Claude + capot
             HStack(alignment: .top, spacing: 8) {
                 Text("⏱").font(.system(size: 13))
-                Text(s.obNote(state.limitHours))
+                Text(s.obNote(state.limitLabel))
                     .font(.system(size: 11))
                     .foregroundStyle(p.text2)
                     .fixedSize(horizontal: false, vertical: true)

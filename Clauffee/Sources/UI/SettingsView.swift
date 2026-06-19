@@ -93,24 +93,29 @@ struct SettingsView: View {
                             .font(.system(size: 12.5, weight: .semibold))
                             .foregroundStyle(p.text1)
                         Spacer()
-                        Text("\(state.limitHours) h")
+                        Text(state.limitLabel)
                             .font(.system(size: 12.5, weight: .bold))
                             .monospacedDigit()
                             .foregroundStyle(accent)
                     }
+                    // Slider sur l'INDICE de l'option (valeurs non régulières :
+                    // 30 min puis heures entières).
                     Slider(
                         value: Binding(
-                            get: { Double(state.limitHours) },
-                            set: { state.limitHours = Int($0.rounded()) }
+                            get: { Double(AppState.limitOptions.firstIndex(of: state.limitHours) ?? 1) },
+                            set: { idx in
+                                let i = max(0, min(AppState.limitOptions.count - 1, Int(idx.rounded())))
+                                state.limitHours = AppState.limitOptions[i]
+                            }
                         ),
-                        in: 1...9,
+                        in: 0...Double(AppState.limitOptions.count - 1),
                         step: 1
                     )
                     .tint(p.caramelDeep)
                     .padding(.top, 2)
                     HStack(spacing: 0) {
-                        ForEach(1...9, id: \.self) { hour in
-                            Text("\(hour)")
+                        ForEach(AppState.limitOptions.indices, id: \.self) { i in
+                            Text(AppState.limitOptions[i] == 0.5 ? "½" : "\(Int(AppState.limitOptions[i]))")
                                 .font(.system(size: 9))
                                 .foregroundStyle(p.text2)
                                 .frame(maxWidth: .infinity)

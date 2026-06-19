@@ -94,7 +94,7 @@ struct Strings {
     // MARK: Toasts
     let toasts: [(emoji: String, text: String)]
     let heatToast: (emoji: String, text: String)
-    let autoOffToast: (Int) -> (emoji: String, text: String)
+    let autoOffToast: (String) -> (emoji: String, text: String)
     let claudeOffToast: (emoji: String, text: String)
 
     // MARK: Notifications
@@ -110,7 +110,7 @@ struct Strings {
     let ob1t: String, ob1s: String
     let ob2t: String, ob2s: String
     let ob3t: String, ob3s: String
-    let obNote: (Int) -> String
+    let obNote: (String) -> String
     let obConfirm: String
     let obNotif: String
     let obNotifOn: String
@@ -172,8 +172,8 @@ extension Strings {
         autoOffFmt: "Auto-off in %@ — keeps things cool",
         noLimit: "No auto-off — watch the heat",
         sessions: { n in
-            n == 0 ? "No Claude Code sessions running"
-                   : "\(n) Claude Code session\(n > 1 ? "s" : "") running"
+            n == 0 ? "No Claude Code sessions open"
+                   : "\(n) Claude Code session\(n > 1 ? "s" : "") open"
         },
         sessionsSubActive: "Remote Control on · pushes go to your iPhone",
         sessionsSubIdle: "Nothing running — no need to keep warm",
@@ -200,7 +200,7 @@ extension Strings {
             ("🎯", "One more token, one more sip"),
         ],
         heatToast: ("🔥", "Long brew ahead — flat, plugged in, never in a bag"),
-        autoOffToast: { h in ("😴", "Brew ended after \(h) h — staying cool") },
+        autoOffToast: { label in ("😴", "Brew ended after \(label) — staying cool") },
         claudeOffToast: ("😴", "No Claude sessions left — brew stopped"),
         notifAsk: "You're back! 👋 Turn off the brew?",
         keep: "Keep on",
@@ -215,7 +215,7 @@ extension Strings {
         ob2s: "Sign in with the same claude.ai account as your terminal.",
         ob3t: "Claude Code config",
         ob3s: "Run /config → set “Remote Control for all sessions” to true (not “default”) and turn on “Push when Claude decides”. Then new sessions need no /remote-control.",
-        obNote: { h in "Every new session starts with a \(h) h block limit — adjustable in Settings ⚙︎. When you reopen the lid, Clauffee sums up or offers to stop." },
+        obNote: { label in "Every new session starts with a \(label) block limit — adjustable in Settings ⚙︎. When you reopen the lid, Clauffee sums up or offers to stop." },
         obConfirm: "I set Remote Control for all sessions to “true”",
         obNotif: "Allow Clauffee notifications",
         obNotifOn: "Notifications allowed ✓",
@@ -263,8 +263,8 @@ extension Strings {
         autoOffFmt: "Arrêt auto dans %@ — pour rester au frais",
         noLimit: "Pas d'arrêt auto — surveille la chauffe",
         sessions: { n in
-            n == 0 ? "Aucune session Claude Code active"
-                   : "\(n) session\(n > 1 ? "s" : "") Claude Code active\(n > 1 ? "s" : "")"
+            n == 0 ? "Aucune session Claude Code ouverte"
+                   : "\(n) session\(n > 1 ? "s" : "") Claude Code ouverte\(n > 1 ? "s" : "")"
         },
         sessionsSubActive: "Remote Control actif · notifs sur ton iPhone",
         sessionsSubIdle: "Rien ne tourne — plus besoin de chauffer",
@@ -291,7 +291,7 @@ extension Strings {
             ("🎯", "Encore un token, encore une gorgée"),
         ],
         heatToast: ("🔥", "Longue infusion — à plat, branché, jamais dans un sac"),
-        autoOffToast: { h in ("😴", "Infusion terminée après \(h) h — on reste au frais") },
+        autoOffToast: { label in ("😴", "Infusion terminée après \(label) — on reste au frais") },
         claudeOffToast: ("😴", "Plus de session Claude — infusion arrêtée"),
         notifAsk: "Te revoilà ! 👋 On arrête l'infusion ?",
         keep: "Continuer",
@@ -306,7 +306,7 @@ extension Strings {
         ob2s: "Connecte-toi avec le même compte claude.ai que dans ton terminal.",
         ob3t: "Config Claude Code",
         ob3s: "Lance /config → règle « Remote Control for all sessions » sur true (pas « default ») et active « Push when Claude decides ». Plus besoin de taper /remote-control.",
-        obNote: { h in "Chaque nouvelle session démarre avec un temps limite de \(h) h de blocage — modifiable dans les Réglages ⚙︎. À la réouverture du capot, Clauffee te résume ou te propose d'arrêter." },
+        obNote: { label in "Chaque nouvelle session démarre avec un temps limite de \(label) de blocage — modifiable dans les Réglages ⚙︎. À la réouverture du capot, Clauffee te résume ou te propose d'arrêter." },
         obConfirm: "J'ai réglé « Remote Control for all sessions » sur « true »",
         obNotif: "Autoriser les notifications Clauffee",
         obNotifOn: "Notifications autorisées ✓",
@@ -354,10 +354,10 @@ extension Strings {
         autoOffFmt: "Авто-стоп через %@ — чтобы не перегреться",
         noLimit: "Без авто-стопа — следи за нагревом",
         sessions: { n in
-            if n == 0 { return "Нет активных сессий Claude Code" }
-            if n == 1 { return "1 сессия Claude Code активна" }
-            if n < 5 { return "\(n) сессии Claude Code активны" }
-            return "\(n) сессий Claude Code активно"
+            if n == 0 { return "Нет открытых сессий Claude Code" }
+            if n == 1 { return "1 сессия Claude Code открыта" }
+            if n < 5 { return "\(n) сессии Claude Code открыты" }
+            return "\(n) сессий Claude Code открыто"
         },
         sessionsSubActive: "Remote Control включён · пуши идут на iPhone",
         sessionsSubIdle: "Ничего не запущено — греть незачем",
@@ -384,7 +384,7 @@ extension Strings {
             ("🎯", "Ещё один токен, ещё один глоток"),
         ],
         heatToast: ("🔥", "Долгая заварка — ровно, в сети и никогда в сумке"),
-        autoOffToast: { h in ("😴", "Заварка окончена через \(h) ч — остываем") },
+        autoOffToast: { label in ("😴", "Заварка окончена через \(label) — остываем") },
         claudeOffToast: ("😴", "Сессии Claude завершены — заварка остановлена"),
         notifAsk: "С возвращением! 👋 Выключить заварку?",
         keep: "Оставить",
@@ -399,7 +399,7 @@ extension Strings {
         ob2s: "Войди с тем же аккаунтом claude.ai, что и в терминале.",
         ob3t: "Настройка Claude Code",
         ob3s: "Запусти /config → задай «Remote Control for all sessions» = true (не «default») и включи «Push when Claude decides». Тогда новым сессиям не нужен /remote-control.",
-        obNote: { h in "Каждая новая сессия стартует с лимитом блокировки \(h) ч — меняется в Настройках ⚙︎. Когда откроешь крышку, Clauffee подведёт итог или предложит остановить." },
+        obNote: { label in "Каждая новая сессия стартует с лимитом блокировки \(label) — меняется в Настройках ⚙︎. Когда откроешь крышку, Clauffee подведёт итог или предложит остановить." },
         obConfirm: "Я задал «Remote Control for all sessions» = «true»",
         obNotif: "Разрешить уведомления Clauffee",
         obNotifOn: "Уведомления разрешены ✓",

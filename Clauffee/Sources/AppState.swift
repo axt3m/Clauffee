@@ -37,7 +37,10 @@ final class AppState: ObservableObject {
 
     /// Langue effective (résout « Auto » sur le clavier courant).
     var language: Language { languagePref.resolved }
-    @Published var limitHours: Int { didSet { defaults.set(limitHours, forKey: Keys.limitHours) } }
+    @Published var limitHours: Double { didSet { defaults.set(limitHours, forKey: Keys.limitHours) } }
+
+    /// Valeurs sélectionnables du minuteur : 30 min, puis heures entières.
+    static let limitOptions: [Double] = [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     @Published var allUnlimited: Bool {
         didSet {
             defaults.set(allUnlimited, forKey: Keys.allUnlimited)
@@ -94,10 +97,13 @@ final class AppState: ObservableObject {
     var strings: Strings { Strings.for(language) }
     var palette: Palette { Palette.for(theme) }
     var effectiveUnlimited: Bool { allUnlimited || sessionUnlimited }
-    var remaining: TimeInterval { max(0, Double(limitHours) * 3600 - elapsed) }
+    var remaining: TimeInterval { max(0, limitHours * 3600 - elapsed) }
 
-    /// Suffixe gris « · 2 h / Illimité » (affiché uniquement à l'arrêt).
-    var limitSuffix: String { effectiveUnlimited ? strings.unlimitedWord : "\(limitHours) h" }
+    /// Étiquette lisible de la limite : « 30 min » ou « N h ».
+    var limitLabel: String { limitHours == 0.5 ? "30 min" : "\(Int(limitHours)) h" }
+
+    /// Suffixe gris « · 1 h / Illimité » (affiché uniquement à l'arrêt).
+    var limitSuffix: String { effectiveUnlimited ? strings.unlimitedWord : limitLabel }
 
     // MARK: - Init
 
@@ -107,8 +113,8 @@ final class AppState: ObservableObject {
         let store = UserDefaults.standard
         theme = Theme(rawValue: store.string(forKey: Keys.theme) ?? "") ?? .milk
         languagePref = LanguagePref(rawValue: store.string(forKey: Keys.language) ?? "") ?? .auto
-        let storedLimit = store.integer(forKey: Keys.limitHours)
-        limitHours = (1...9).contains(storedLimit) ? storedLimit : 2
+        let storedLimit = store.double(forKey: Keys.limitHours)
+        limitHours = Self.limitOptions.contains(storedLimit) ? storedLimit : 1
         allUnlimited = store.bool(forKey: Keys.allUnlimited)
         funToasts = store.object(forKey: Keys.funToasts) as? Bool ?? true
         lidNotification = store.object(forKey: Keys.lidNotification) as? Bool ?? true
@@ -247,7 +253,7 @@ final class AppState: ObservableObject {
         switch reason {
         case .autoOff:
             if funToasts {
-                let toast = strings.autoOffToast(limitHours)
+                let toast = strings.autoOffToast(limitLabel)
                 ToastPresenter.shared.show(emoji: toast.emoji, text: toast.text, palette: palette)
             }
             if lidClosed { pendingSummaryDuration = lastBrewDuration }
