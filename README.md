@@ -23,8 +23,8 @@ while you step away. Toggle **Start Brew**, shut the lid, walk off.
 ## Build & run
 
 ```sh
-git clone https://gitlab.corp.withings.com/aterao/clauffee.git
-cd clauffee
+git clone https://github.com/axt3m/Clauffee.git
+cd Clauffee
 open Clauffee.xcodeproj
 ```
 
