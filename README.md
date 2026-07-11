@@ -30,7 +30,10 @@ build it yourself. Works on both Apple Silicon and Intel Macs.
    **Right-click Clauffee.app → Open → Open** (you only do this once).
 3. ☕ appears in your menu bar.
 
-Then do the [one-time setup](#one-time-setup-on-first-brew) below.
+That's it — **no manual setup needed in advance**. On your first brew,
+Clauffee's onboarding walks you through everything: enabling notifications
+and a one-time admin command it shows you (with a **Copy** button). See
+[what to expect](#first-brew--what-clauffee-asks-you) below.
 
 ## Requirements
 
@@ -52,45 +55,26 @@ In Xcode:
    "Sign to Run Locally" works for personal use).
 2. Press **⌘R**.
 
-## One-time setup (on first brew)
+## First brew — what Clauffee asks you
+
+**You don't need to prepare anything.** The in-app onboarding guides you the
+first time you brew — this section is just so you know what's coming (and can
+inspect the admin command up front, since it's open source).
 
 Clauffee toggles sleep with `pmset`, which needs admin rights. To avoid a
-password prompt every time, it uses a passwordless `sudo` rule. The app shows
-this command in-app on first launch — paste it once in Terminal:
+password prompt every time, it uses a passwordless `sudo` rule. Clauffee shows
+you this exact command in-app (with a **Copy** button) — paste it once in
+Terminal, then click **Try again**:
 
 ```sh
 echo '%admin ALL=(root) NOPASSWD: /usr/bin/pmset -a disablesleep 1, /usr/bin/pmset -a disablesleep 0' | sudo tee /etc/sudoers.d/clauffee
 ```
 
-Then click **Try again**. You'll also be asked to allow notifications on the
-first brew.
+You'll also be asked to allow notifications — the app handles that prompt for
+you too.
 
-## Releasing (maintainer)
-
-The `.app` on the Releases page is built with an **ad-hoc signature** (no Apple
-Developer account, hence the right-click-to-open step above).
-
-Releases are published **by hand** so the title, notes, and asset stay under
-your control. To cut one:
-
-1. Build and package the app:
-
-   ```sh
-   ./scripts/build-release.sh   # produces dist/Clauffee-<version>.zip
-   ```
-
-2. On GitHub, **Draft a new release**, create the tag (e.g. `v1.0`), write the
-   notes, and attach `dist/Clauffee-<version>.zip`.
-
-The [`Release`](.github/workflows/release.yml) GitHub Action does **not** touch
-Releases — it only builds/verifies the app on every `v*` tag (or manual
-dispatch) and uploads the zip as a downloadable **workflow artifact**, so you
-can grab a CI-built zip instead of building locally if you prefer.
-
-> Want a friction-free install (plain double-click)? Join the Apple Developer
-> Program, then sign with a **Developer ID** certificate and **notarize** the
-> app. The Mac App Store isn't an option here — the app is unsandboxed and uses
-> a private `login.framework` symbol.
+> **Maintainers:** see [`RELEASING.md`](RELEASING.md) for how to build, sign,
+> and publish a release.
 
 ## License
 
