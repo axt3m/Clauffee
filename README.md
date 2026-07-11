@@ -64,24 +64,24 @@ first brew.
 ## Releasing (maintainer)
 
 The `.app` on the Releases page is built with an **ad-hoc signature** (no Apple
-Developer account, hence the right-click-to-open step above). Two ways to cut a
-release:
+Developer account, hence the right-click-to-open step above).
 
-- **Automatic** — push a version tag and let CI do it:
+Releases are published **by hand** so the title, notes, and asset stay under
+your control. To cut one:
 
-  ```sh
-  git tag v1.0
-  git push origin v1.0
-  ```
+1. Build and package the app:
 
-  The [`Release`](.github/workflows/release.yml) GitHub Action builds the app
-  and attaches `Clauffee-<version>.zip` to a new Release automatically.
+   ```sh
+   ./scripts/build-release.sh   # produces dist/Clauffee-<version>.zip
+   ```
 
-- **Manual** — build locally, then upload the zip to a Release by hand:
+2. On GitHub, **Draft a new release**, create the tag (e.g. `v1.0`), write the
+   notes, and attach `dist/Clauffee-<version>.zip`.
 
-  ```sh
-  ./scripts/build-release.sh   # produces dist/Clauffee-<version>.zip
-  ```
+The [`Release`](.github/workflows/release.yml) GitHub Action does **not** touch
+Releases — it only builds/verifies the app on every `v*` tag (or manual
+dispatch) and uploads the zip as a downloadable **workflow artifact**, so you
+can grab a CI-built zip instead of building locally if you prefer.
 
 > Want a friction-free install (plain double-click)? Join the Apple Developer
 > Program, then sign with a **Developer ID** certificate and **notarize** the
