@@ -3,6 +3,7 @@
 
 # Xcode — user-specific & build artifacts
 build/
+dist/
 DerivedData/
 *.xcuserstate
 xcuserdata/

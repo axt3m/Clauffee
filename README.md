@@ -15,10 +15,23 @@ while you step away. Toggle **Start Brew**, shut the lid, walk off.
 > come from Claude Code's own Remote Control feature — see the in-app
 > onboarding for the one-time `/config` setup.
 
+## Download
+
+Grab the latest **`Clauffee-<version>.zip`** from the
+[**Releases**](https://github.com/axt3m/Clauffee/releases) page — no need to
+build it yourself. Works on both Apple Silicon and Intel Macs.
+
+1. Unzip and drag **Clauffee.app** into `/Applications`.
+2. Because the app isn't notarized by Apple, macOS blocks it on first launch.
+   **Right-click Clauffee.app → Open → Open** (you only do this once).
+3. ☕ appears in your menu bar.
+
+Then do the [one-time setup](#one-time-setup-on-first-brew) below.
+
 ## Requirements
 
-- macOS 14 (Sonoma) or later
-- Xcode 16+ (to build it yourself)
+- macOS 14 (Sonoma) or later — to run
+- Xcode 16+ — only if you want to build it yourself
 
 ## Build & run
 
@@ -48,17 +61,32 @@ echo '%admin ALL=(root) NOPASSWD: /usr/bin/pmset -a disablesleep 1, /usr/bin/pms
 Then click **Try again**. You'll also be asked to allow notifications on the
 first brew.
 
-## Notes for contributors
+## Releasing (maintainer)
 
-- **App Sandbox is disabled** (`ENABLE_APP_SANDBOX = NO`) — required because the
-  app shells out to `pmset`/`pgrep` (`Process`) and reads the lid state via
-  IOKit. Sandboxing would block these.
-- **Screen lock** uses a private `login.framework` symbol
-  (`SACLockScreenImmediate`) with a `pmset displaysleepnow` fallback — see
-  `Sources/Core/ScreenLocker.swift`.
-- Source is organized under `Clauffee/Sources/` (`Core/`, `UI/`, plus
-  `AppState`, `L10n`, `Theme`). Localization is a hand-rolled struct in
-  `L10n.swift` so language switches instantly without relaunch.
+The `.app` on the Releases page is built with an **ad-hoc signature** (no Apple
+Developer account, hence the right-click-to-open step above). Two ways to cut a
+release:
+
+- **Automatic** — push a version tag and let CI do it:
+
+  ```sh
+  git tag v1.0
+  git push origin v1.0
+  ```
+
+  The [`Release`](.github/workflows/release.yml) GitHub Action builds the app
+  and attaches `Clauffee-<version>.zip` to a new Release automatically.
+
+- **Manual** — build locally, then upload the zip to a Release by hand:
+
+  ```sh
+  ./scripts/build-release.sh   # produces dist/Clauffee-<version>.zip
+  ```
+
+> Want a friction-free install (plain double-click)? Join the Apple Developer
+> Program, then sign with a **Developer ID** certificate and **notarize** the
+> app. The Mac App Store isn't an option here — the app is unsandboxed and uses
+> a private `login.framework` symbol.
 
 ## License
 

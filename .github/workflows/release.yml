@@ -1,0 +1,40 @@
+name: Release
+
+# Builds Clauffee and attaches a downloadable Clauffee-<version>.zip to a
+# GitHub Release whenever you push a version tag (e.g. `git tag v1.0 && git
+# push origin v1.0`). No Apple Developer account or secrets required — the app
+# is ad-hoc signed and NOT notarized, so first launch needs right-click -> Open.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch: {}   # allow manual runs from the Actions tab
+
+permissions:
+  contents: write          # needed to create the Release and upload assets
+
+jobs:
+  build:
+    runs-on: macos-15      # GitHub-hosted macOS runner
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select latest Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Build & package
+        run: ./scripts/build-release.sh
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Clauffee-app
+          path: dist/*.zip
+
+      - name: Attach to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          generate_release_notes: true
