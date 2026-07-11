@@ -53,5 +53,8 @@ struct PopoverRootView: View {
         .preferredColorScheme(settings.theme == .milk ? .light : .dark)
         .animation(.easeOut(duration: Constants.settingsAnimation), value: router.settingsOpen)
         .animation(.easeOut(duration: Constants.onboardingAnimation), value: router.showOnboarding)
+        // Ferme le popover après 2 min d'inactivité (voir PopoverIdleCloser).
+        .onAppear { PopoverIdleCloser.shared.start() }
+        .onDisappear { PopoverIdleCloser.shared.stop() }
     }
 }

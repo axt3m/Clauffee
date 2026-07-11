@@ -336,23 +336,27 @@ struct BrewView: View {
 
     private var footer: some View {
         HStack(spacing: Constants.footerSpacing) {
-            if settings.allUnlimited {
-                // Illimité global : pas de toggle, juste le texte.
-                Text(s.unlimitedFooter)
-                    .font(.system(size: Constants.footerFontSize))
-                    .foregroundStyle(p.text2)
-            } else {
-                Toggle("", isOn: Binding(
-                    get: { brew.sessionUnlimited },
-                    set: { _ in brew.toggleSessionUnlimited() }
-                ))
-                .labelsHidden()
-                .toggleStyle(CaramelToggleStyle(palette: p, small: true))
-                Text(s.sessionUnlimitedLabel)
-                    .font(.system(size: Constants.footerFontSize))
-                    .foregroundStyle(p.text2)
-                    .lineLimit(Constants.footerLineLimit)
-                    .fixedSize(horizontal: false, vertical: true)
+            // Le réglage « illimité » n'a pas de sens pendant l'écran
+            // d'autorisation sudoers : on ne garde que « Quitter ».
+            if !brew.sudoersError {
+                if settings.allUnlimited {
+                    // Illimité global : pas de toggle, juste le texte.
+                    Text(s.unlimitedFooter)
+                        .font(.system(size: Constants.footerFontSize))
+                        .foregroundStyle(p.text2)
+                } else {
+                    Toggle("", isOn: Binding(
+                        get: { brew.sessionUnlimited },
+                        set: { _ in brew.toggleSessionUnlimited() }
+                    ))
+                    .labelsHidden()
+                    .toggleStyle(CaramelToggleStyle(palette: p, small: true))
+                    Text(s.sessionUnlimitedLabel)
+                        .font(.system(size: Constants.footerFontSize))
+                        .foregroundStyle(p.text2)
+                        .lineLimit(Constants.footerLineLimit)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
 
             Spacer(minLength: Constants.footerSpacing)
