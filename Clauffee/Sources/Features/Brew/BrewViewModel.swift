@@ -18,6 +18,7 @@ final class BrewViewModel: ObservableObject {
         static let secondsPerHour: TimeInterval = 3600
         static let heatThresholdHours: Double = 5      // ≥ : avertissement chauffe
         static let tickInterval: TimeInterval = 1
+        static let returnDebounce: TimeInterval = 3    // capot + réveil quasi simultanés → 1 seule notif
     }
 
     enum EndReason {
@@ -49,9 +50,11 @@ final class BrewViewModel: ObservableObject {
     private var tickTimer: Timer?
     private var pendingSummaryDuration: TimeInterval?
     private var lastToastIndex = -1
+    private var lastReturn: Date?               // anti-doublon capot/réveil (voir Constants.returnDebounce)
 
     private let claudeMonitor = ClaudeSessionMonitor()
     private let lidMonitor = LidMonitor()
+    private let wakeMonitor = SessionWakeMonitor()
 
     init(settings: SettingsStore, router: AppRouter) {
         self.settings = settings
@@ -78,8 +81,11 @@ final class BrewViewModel: ObservableObject {
         claudeMonitor.onCount = { [weak self] count in
             self?.claudeSessionCount = count
         }
-        lidMonitor.onLidOpened = { [weak self] in self?.handleLidOpened() }
+        // Retour de l'utilisateur : capot rouvert OU réveil/déverrouillage de
+        // session (bouton power). Même traitement, dédupliqué.
+        lidMonitor.onLidOpened = { [weak self] in self?.handleSessionReturn() }
         lidMonitor.onLidClosed = { [weak self] in self?.handleLidClosed() }
+        wakeMonitor.onWake = { [weak self] in self?.handleSessionReturn() }
         Notifier.shared.onStopRequested = { [weak self] in self?.endBrew(.manual) }
     }
 
@@ -137,6 +143,7 @@ final class BrewViewModel: ObservableObject {
             startTick()
             claudeMonitor.start()
             lidMonitor.start()
+            wakeMonitor.start()
             Notifier.shared.requestPermissionIfNeeded()
 
             if effectiveUnlimited || settings.limitHours >= Constants.heatThresholdHours {
@@ -144,6 +151,8 @@ final class BrewViewModel: ObservableObject {
             } else if settings.funToasts {
                 showFunToast()
             }
+            // Le popover n'est plus fermé au démarrage : il se ferme désormais
+            // après 2 min d'inactivité (voir PopoverIdleCloser).
         }
     }
 
@@ -174,8 +183,11 @@ final class BrewViewModel: ObservableObject {
             break
         }
 
-        // Le monitor de capot reste actif si un résumé est en attente.
-        if pendingSummaryDuration == nil { lidMonitor.stop() }
+        // Les monitors de retour restent actifs si un résumé est en attente.
+        if pendingSummaryDuration == nil {
+            lidMonitor.stop()
+            wakeMonitor.stop()
+        }
 
         brewStart = nil
         elapsed = 0
@@ -192,7 +204,14 @@ final class BrewViewModel: ObservableObject {
         Task.detached { ScreenLocker.lock() }
     }
 
-    private func handleLidOpened() {
+    /// Retour de l'utilisateur (capot rouvert ou réveil/déverrouillage). Le
+    /// capot et le réveil peuvent se déclencher quasi simultanément : on
+    /// déduplique sur une courte fenêtre pour n'émettre qu'une notification.
+    private func handleSessionReturn() {
+        let now = Date()
+        if let last = lastReturn, now.timeIntervalSince(last) < Constants.returnDebounce { return }
+        lastReturn = now
+
         if isBrewing {
             if settings.lidNotification {
                 Notifier.shared.notifyAsk(strings: settings.strings)
@@ -201,6 +220,7 @@ final class BrewViewModel: ObservableObject {
             Notifier.shared.notifyDone(duration: formatClock(duration), strings: settings.strings)
             pendingSummaryDuration = nil
             lidMonitor.stop()
+            wakeMonitor.stop()
         }
     }
 
@@ -276,6 +296,7 @@ final class BrewViewModel: ObservableObject {
             stopTick()
             claudeMonitor.stop()
             lidMonitor.stop()
+            wakeMonitor.stop()
             try? PowerManager.setSleepDisabled(false) // synchrone : on part proprement
         }
         ToastPresenter.shared.dismiss()

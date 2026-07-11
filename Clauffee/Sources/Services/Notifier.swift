@@ -18,6 +18,10 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     /// État simplifié pour l'UI (sans exposer UserNotifications aux vues).
     enum Permission { case notDetermined, authorized, denied }
 
+    /// Style d'affichage choisi par l'utilisateur dans les Réglages Système.
+    /// `banner` = Temporaire (auto-dismiss) · `alert` = Persistant (reste).
+    enum AlertStyle { case silent, banner, alert, unknown }
+
     static let shared = Notifier()
 
     /// Branché par AppState : l'action « Arrêter » coupe l'infusion.
@@ -66,6 +70,26 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         permissionRequested = true
         UNUserNotificationCenter.current()
             .requestAuthorization(options: [.alert, .sound]) { _, _ in }
+    }
+
+    /// Permission + style d'alerte courants, renvoyés sur le main thread.
+    func status(_ completion: @escaping (Permission, AlertStyle) -> Void) {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            let perm: Permission
+            switch settings.authorizationStatus {
+            case .notDetermined: perm = .notDetermined
+            case .denied: perm = .denied
+            default: perm = .authorized
+            }
+            let style: AlertStyle
+            switch settings.alertStyle {
+            case .none: style = .silent
+            case .banner: style = .banner
+            case .alert: style = .alert
+            @unknown default: style = .unknown
+            }
+            DispatchQueue.main.async { completion(perm, style) }
+        }
     }
 
     /// État courant de la permission, renvoyé sur le main thread.
@@ -124,6 +148,13 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         content.body = body
         content.categoryIdentifier = category
         content.sound = .default
+        // Plus visible et perce les modes Concentration. Pour qu'elle RESTE
+        // affichée jusqu'à réponse, l'utilisateur doit choisir le style
+        // « Alertes » dans Réglages Système › Notifications › Clauffee (macOS
+        // ne permet pas à l'app de forcer ce choix). Le niveau time-sensitive
+        // nécessite l'entitlement com.apple.developer.usernotifications.time-sensitive ;
+        // sans lui, le système retombe silencieusement sur .active.
+        content.interruptionLevel = .timeSensitive
 
         let request = UNNotificationRequest(identifier: UUID().uuidString,
                                             content: content,
@@ -148,6 +179,11 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler:
                                     @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.banner, .sound])
+        // `.list` garde la notif dans le Centre de notifications jusqu'à
+        // réponse (au lieu de disparaître). Ce handler ne s'applique que si
+        // l'app est au premier plan ; en tâche de fond (cas normal d'une app
+        // de barre de menus), c'est le style « Bannières/Alertes » choisi par
+        // l'utilisateur dans les Réglages Système qui décide de la persistance.
+        completionHandler([.banner, .list, .sound])
     }
 }
