@@ -11,6 +11,8 @@ on:
   push:
     tags:
       - "v*"
+  pull_request:
+    branches: [main]      # build every PR into main → gives a status check
   workflow_dispatch: {}   # allow manual runs from the Actions tab
 
 permissions:
