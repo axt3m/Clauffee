@@ -73,32 +73,8 @@ echo '%admin ALL=(root) NOPASSWD: /usr/bin/pmset -a disablesleep 1, /usr/bin/pms
 You'll also be asked to allow notifications — the app handles that prompt for
 you too.
 
-## Releasing (maintainer)
-
-The `.app` on the Releases page is built with an **ad-hoc signature** (no Apple
-Developer account, hence the right-click-to-open step above).
-
-Releases are published **by hand** so the title, notes, and asset stay under
-your control. To cut one:
-
-1. Build and package the app:
-
-   ```sh
-   ./scripts/build-release.sh   # produces dist/Clauffee-<version>.zip
-   ```
-
-2. On GitHub, **Draft a new release**, create the tag (e.g. `v1.0`), write the
-   notes, and attach `dist/Clauffee-<version>.zip`.
-
-The [`Release`](.github/workflows/release.yml) GitHub Action does **not** touch
-Releases — it only builds/verifies the app on every `v*` tag (or manual
-dispatch) and uploads the zip as a downloadable **workflow artifact**, so you
-can grab a CI-built zip instead of building locally if you prefer.
-
-> Want a friction-free install (plain double-click)? Join the Apple Developer
-> Program, then sign with a **Developer ID** certificate and **notarize** the
-> app. The Mac App Store isn't an option here — the app is unsandboxed and uses
-> a private `login.framework` symbol.
+> **Maintainers:** see [`RELEASING.md`](RELEASING.md) for how to build, sign,
+> and publish a release.
 
 ## License
 
