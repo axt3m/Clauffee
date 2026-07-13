@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="docs/banner.png" alt="Clauffee — keep your Mac awake for long Claude Code sessions" width="100%">
-</p>
-
 # Clauffee ☕
 
 A tiny macOS **menu-bar app that keeps your Mac awake** — even with the lid
