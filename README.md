@@ -19,6 +19,21 @@ while you step away. Toggle **Start Brew**, shut the lid, walk off.
 > come from Claude Code's own Remote Control feature — see the in-app
 > onboarding for the one-time `/config` setup.
 
+## Screenshots
+
+<table>
+  <tr>
+    <td width="33%" valign="top"><img src="docs/screenshot-idle.png" width="100%"><br><sub><b>In the menu bar</b> — idle, ready to brew</sub></td>
+    <td width="33%" valign="top"><img src="docs/screenshot-active.png" width="100%"><br><sub><b>Brewing</b> — sleep blocked, sessions tracked</sub></td>
+    <td width="33%" valign="top"><img src="docs/screenshot-settings.png" width="100%"><br><sub><b>Settings</b> — themes, languages, time limit</sub></td>
+  </tr>
+  <tr>
+    <td valign="top"><img src="docs/screenshot-onboarding-sudo.png" width="100%"><br><sub><b>First-brew onboarding</b> — one-time admin command with a <b>Copy</b> button</sub></td>
+    <td valign="top"><img src="docs/screenshot-onboarding-remote.png" width="100%"><br><sub><b>Guided setup</b> — Remote Control walkthrough for phone notifications</sub></td>
+    <td valign="top"><img src="docs/screenshot-notification.png" width="100%"><br><sub><b>"You're back"</b> — reminder to stop the session when you reopen the lid</sub></td>
+  </tr>
+</table>
+
 ## Download
 
 Grab the latest **`Clauffee-<version>.zip`** from the
