@@ -184,7 +184,7 @@ struct SettingsView: View {
                     .padding(.top, Constants.sliderTopPadding)
                     HStack(spacing: 0) {
                         ForEach(SettingsStore.limitOptions.indices, id: \.self) { i in
-                            Text(SettingsStore.limitOptions[i] == Constants.halfHour ? "½" : "\(Int(SettingsStore.limitOptions[i]))")
+                            Text(tickLabel(SettingsStore.limitOptions[i]))
                                 .font(.system(size: Constants.tickFontSize))
                                 .foregroundStyle(p.text2)
                                 .frame(maxWidth: .infinity)
@@ -251,6 +251,12 @@ struct SettingsView: View {
 
     private var divider: some View {
         Rectangle().fill(p.divider).frame(height: Constants.dividerHeight)
+    }
+
+    /// Libellé court sous le slider : « 1m », « ½ », ou le nombre d'heures.
+    private func tickLabel(_ value: Double) -> String {
+        if value == SettingsStore.oneMinute { return "1m" }
+        return value == Constants.halfHour ? "½" : "\(Int(value))"
     }
 
     private func card<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {

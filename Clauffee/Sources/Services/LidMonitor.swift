@@ -7,9 +7,9 @@
 //  « Te revoilà ». Tourne pendant l'infusion, et continue après si une
 //  infusion s'est terminée capot fermé (pour le résumé à la réouverture).
 //
-//  Note : après un auto-off capot fermé, le Mac s'endort et l'app est
-//  gelée ; au réveil (réouverture), le timer reprend et détecte la
-//  transition en ~2 s.
+//  Note : après un auto-off capot fermé, BrewViewModel force la veille
+//  (PowerManager.sleepNow) et l'app est gelée ; au réveil (réouverture),
+//  le timer reprend et détecte la transition en ~2 s.
 //
 
 import Foundation

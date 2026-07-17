@@ -168,17 +168,23 @@ final class BrewViewModel: ObservableObject {
 
         let lidClosed = lidMonitor.isClosed == true
 
+        // Fin de session capot fermé (l'utilisateur est parti) : on devra
+        // ENDORMIR le Mac nous-mêmes. Remettre `disablesleep 0` ne suffit pas
+        // (voir PowerManager.sleepNow). Faux pour un arrêt manuel / Quitter,
+        // où l'utilisateur est présent devant la machine.
+        var sleepAfterEnd = false
+
         switch reason {
         case .autoOff:
             if settings.funToasts {
                 let toast = settings.strings.autoOffToast(settings.limitLabel)
                 ToastPresenter.shared.show(emoji: toast.emoji, text: toast.text, palette: settings.palette)
             }
-            if lidClosed { pendingSummaryDuration = lastBrewDuration }
+            if lidClosed { pendingSummaryDuration = lastBrewDuration; sleepAfterEnd = true }
         case .claudeDone:
             let toast = settings.strings.claudeOffToast
             ToastPresenter.shared.show(emoji: toast.emoji, text: toast.text, palette: settings.palette)
-            if lidClosed { pendingSummaryDuration = lastBrewDuration }
+            if lidClosed { pendingSummaryDuration = lastBrewDuration; sleepAfterEnd = true }
         case .manual, .quit:
             break
         }
@@ -192,7 +198,12 @@ final class BrewViewModel: ObservableObject {
         brewStart = nil
         elapsed = 0
 
-        Task.detached { try? PowerManager.setSleepDisabled(false) }
+        // Ordre important : rétablir la permission de veille AVANT de forcer le
+        // sleep (sinon `disablesleep 1` bloquerait le sleepnow).
+        Task.detached {
+            try? PowerManager.setSleepDisabled(false)
+            if sleepAfterEnd { PowerManager.sleepNow() }
+        }
     }
 
     // MARK: - Capot
