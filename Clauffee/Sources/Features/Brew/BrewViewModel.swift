@@ -39,6 +39,11 @@ final class BrewViewModel: ObservableObject {
 
     private(set) var lastBrewDuration: TimeInterval = 0
 
+    /// Vrai si le capot a été fermé à un moment de la session en cours (et pas
+    /// rouvert depuis). Plus fiable que lire `AppleClamshellState` ponctuellement
+    /// au moment de l'auto-off, cette lecture pouvant renvoyer nil/false.
+    private var lidClosedDuringBrew = false
+
     // MARK: Dépendances
 
     private let settings: SettingsStore
@@ -139,6 +144,7 @@ final class BrewViewModel: ObservableObject {
             brewStart = Date()
             elapsed = 0
             pendingSummaryDuration = nil
+            lidClosedDuringBrew = false
 
             startTick()
             claudeMonitor.start()
@@ -166,7 +172,10 @@ final class BrewViewModel: ObservableObject {
         stopTick()
         claudeMonitor.stop()
 
-        let lidClosed = lidMonitor.isClosed == true
+        // Capot fermé pendant la session (drapeau fiable) plutôt qu'une lecture
+        // ponctuelle de AppleClamshellState, qui peut renvoyer nil/false pile au
+        // moment de l'auto-off.
+        let lidClosed = lidClosedDuringBrew
 
         // Fin de session capot fermé (l'utilisateur est parti) : on devra
         // ENDORMIR le Mac nous-mêmes. Remettre `disablesleep 0` ne suffit pas
@@ -212,6 +221,7 @@ final class BrewViewModel: ObservableObject {
     /// machine reste éveillée grâce à disablesleep). Systématique, non configurable.
     private func handleLidClosed() {
         guard isBrewing else { return }
+        lidClosedDuringBrew = true
         Task.detached { ScreenLocker.lock() }
     }
 
@@ -224,6 +234,9 @@ final class BrewViewModel: ObservableObject {
         lastReturn = now
 
         if isBrewing {
+            // L'utilisateur est revenu (capot rouvert / réveil) pendant l'infusion :
+            // il est présent, on annule l'intention d'endormir à l'auto-off.
+            lidClosedDuringBrew = false
             if settings.lidNotification {
                 Notifier.shared.notifyAsk(strings: settings.strings)
             }
