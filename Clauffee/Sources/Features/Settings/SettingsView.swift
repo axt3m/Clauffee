@@ -235,8 +235,13 @@ struct SettingsView: View {
         }
     }
 
+    /// Version affichée, lue depuis le bundle (MARKETING_VERSION) → jamais à
+    /// mettre à jour à la main.
+    private static let appVersion = Bundle.main
+        .object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
+
     private var about: some View {
-        Text(s.about)
+        Text("Clauffee v\(Self.appVersion) · \(s.about)")
             .font(.system(size: Constants.aboutFontSize))
             .foregroundStyle(p.text2)
             .multilineTextAlignment(.center)
