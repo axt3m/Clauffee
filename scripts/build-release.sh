@@ -62,9 +62,20 @@ echo "==> Packaging $ZIP_PATH"
 # ditto preserves macOS metadata / symlinks so the .app stays valid.
 ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
 
+# --- also build a .dmg (drag-to-Applications) --------------------------------
+DMG_PATH="$DIST_DIR/Clauffee-$VERSION.dmg"
+echo "==> Packaging $DMG_PATH"
+STAGE="$(mktemp -d)/Clauffee"
+mkdir -p "$STAGE"
+ditto "$APP_PATH" "$STAGE/Clauffee.app"        # keep the sealed signature
+ln -s /Applications "$STAGE/Applications"       # drag target
+hdiutil create -volname "Clauffee" -srcfolder "$STAGE" -ov -format UDZO "$DMG_PATH" >/dev/null
+rm -rf "$(dirname "$STAGE")"
+
 echo ""
 echo "Done."
 echo "  App: $APP_PATH"
 echo "  Zip: $ZIP_PATH"
+echo "  Dmg: $DMG_PATH"
 echo ""
-echo "Next: upload $ZIP_PATH to a GitHub Release (tag e.g. v$VERSION)."
+echo "Next: upload the zip and dmg to a GitHub Release (tag e.g. v$VERSION)."

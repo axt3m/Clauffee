@@ -17,11 +17,12 @@ your control.
 1. Build and package the app:
 
    ```sh
-   ./scripts/build-release.sh   # produces dist/Clauffee-<version>.zip
+   ./scripts/build-release.sh   # produces dist/Clauffee-<version>.{zip,dmg}
    ```
 
 2. On GitHub, **Draft a new release**, create the tag (e.g. `v1.0`), write the
-   notes, and attach `dist/Clauffee-<version>.zip`.
+   notes, and attach both `dist/Clauffee-<version>.zip` and
+   `dist/Clauffee-<version>.dmg`.
 
 ## CI
 
