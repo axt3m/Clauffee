@@ -42,11 +42,8 @@ final class SettingsStore: ObservableObject {
     }
     @Published var firstRunSeen: Bool { didSet { defaults.set(firstRunSeen, forKey: Keys.firstRunSeen) } }
 
-    /// Valeur « 1 min » (en heures), pour tester l'auto-off rapidement.
-    static let oneMinute: Double = 1.0 / 60.0
-
-    /// Valeurs sélectionnables du minuteur : 1 min, 30 min, puis heures entières.
-    static let limitOptions: [Double] = [oneMinute, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    /// Valeurs sélectionnables du minuteur : 30 min, puis heures entières.
+    static let limitOptions: [Double] = [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     // MARK: Dérivés (purs réglages)
 
@@ -55,11 +52,8 @@ final class SettingsStore: ObservableObject {
     var strings: Strings { Strings.for(language) }
     var palette: Palette { Palette.for(theme) }
 
-    /// Étiquette lisible de la limite : « 1 min », « 30 min » ou « N h ».
-    var limitLabel: String {
-        if limitHours == Self.oneMinute { return "1 min" }
-        return limitHours == Constants.halfHour ? "30 min" : "\(Int(limitHours)) h"
-    }
+    /// Étiquette lisible de la limite : « 30 min » ou « N h ».
+    var limitLabel: String { limitHours == Constants.halfHour ? "30 min" : "\(Int(limitHours)) h" }
 
     // MARK: Privé
 
