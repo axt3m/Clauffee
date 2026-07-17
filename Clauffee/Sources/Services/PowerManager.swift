@@ -47,6 +47,27 @@ nonisolated enum PowerManager {
         }
     }
 
+    /// Endort immédiatement le système via `pmset sleepnow`.
+    ///
+    /// Indispensable en fin de session capot fermé : remettre `disablesleep 0`
+    /// rend seulement la veille *possible*, ça ne la *déclenche* pas. Comme le
+    /// capot est déjà fermé, aucun événement clamshell ne relance l'évaluation,
+    /// et l'idle-sleep peut rester bloqué par une assertion tierce (ex. le
+    /// périphérique audio du Simulateur iOS via coreaudiod). Un sleep forcé
+    /// passe outre les assertions `PreventUserIdleSystemSleep`.
+    ///
+    /// `pmset sleepnow` ne modifie aucun réglage → aucun droit admin requis
+    /// (même pattern que `pmset displaysleepnow` dans `ScreenLocker`).
+    static func sleepNow() {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/pmset")
+        process.arguments = ["sleepnow"]
+        process.standardOutput = Pipe()
+        process.standardError = Pipe()
+        try? process.run()
+        process.waitUntilExit()
+    }
+
     /// True si la règle sudoers NOPASSWD est en place, SANS exécuter pmset
     /// ni changer l'état de veille. `sudo -n -l <cmd>` renvoie 0 quand la
     /// commande est autorisée sans mot de passe — sinon échoue (règle absente).
