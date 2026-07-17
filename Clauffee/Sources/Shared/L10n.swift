@@ -314,7 +314,7 @@ extension Strings {
         lidNotifSub: "Shown when you come back (reopen the lid, wake, or unlock), a reminder to stop the session. Turns off the reminder, not the system permission.",
         launchLogin: "Keep Clauffee in the menu bar",
         launchLoginSub: "Relaunches automatically each time you log in",
-        about: "Clauffee v1.0 · Quitting saves your settings and always restores normal sleep"
+        about: "Quitting saves your settings and always restores normal sleep"
     )
 }
 
@@ -454,7 +454,7 @@ extension Strings {
         lidNotifSub: "Affichée à ton retour (réouverture du capot, réveil ou déverrouillage), pour penser à couper la session. Coupe le rappel d'arrêt, pas la permission système.",
         launchLogin: "Garder Clauffee dans la barre des menus",
         launchLoginSub: "Se relance automatiquement à chaque ouverture de session",
-        about: "Clauffee v1.0 · Quitter sauvegarde tes réglages et rétablit toujours la veille normale"
+        about: "Quitter sauvegarde tes réglages et rétablit toujours la veille normale"
     )
 }
 
@@ -596,7 +596,7 @@ extension Strings {
         lidNotifSub: "Показывается при возвращении (открытие крышки, пробуждение или разблокировка) — напоминание остановить сессию. Отключает напоминание, а не системное разрешение.",
         launchLogin: "Держать Clauffee в строке меню",
         launchLoginSub: "Автоматически запускается при каждом входе",
-        about: "Clauffee v1.0 · Выход сохраняет настройки и всегда возвращает обычный сон"
+        about: "Выход сохраняет настройки и всегда возвращает обычный сон"
     )
 }
 
