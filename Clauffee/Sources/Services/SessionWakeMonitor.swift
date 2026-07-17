@@ -2,10 +2,10 @@
 //  SessionWakeMonitor.swift
 //  Clauffee
 //
-//  Détecte le retour de l'utilisateur INDÉPENDAMMENT du capot : réveil
-//  système (bouton power) et déverrouillage de session. Complète LidMonitor
-//  pour les cas sans transition de capot — réveil clavier/power, écran
-//  externe en clamshell, ou simple verrouillage sans fermeture du capot.
+//  Détecte, INDÉPENDAMMENT du capot, le départ et le retour de l'utilisateur :
+//  verrouillage de session (départ), déverrouillage et réveil système (retour).
+//  Complète LidMonitor pour les cas sans transition de capot — lock/unlock sans
+//  fermeture du capot, réveil clavier/power, écran externe en clamshell.
 //
 //  Les deux centres de notification utilisés délivrent sur le main thread,
 //  donc `onWake` est appelé sur le main thread.
@@ -20,6 +20,10 @@ final class SessionWakeMonitor {
     /// de la session.
     var onWake: (() -> Void)?
 
+    /// Appelé sur le main thread au verrouillage de la session (sans fermeture
+    /// du capot). Traité comme un « départ », au même titre que le capot fermé.
+    var onLock: (() -> Void)?
+
     private var observing = false
 
     var isRunning: Bool { observing }
@@ -30,14 +34,20 @@ final class SessionWakeMonitor {
 
         NSWorkspace.shared.notificationCenter.addObserver(
             self,
-            selector: #selector(handle),
+            selector: #selector(handleWake),
             name: NSWorkspace.didWakeNotification,
             object: nil)
 
         DistributedNotificationCenter.default().addObserver(
             self,
-            selector: #selector(handle),
+            selector: #selector(handleWake),
             name: NSNotification.Name("com.apple.screenIsUnlocked"),
+            object: nil)
+
+        DistributedNotificationCenter.default().addObserver(
+            self,
+            selector: #selector(handleLock),
+            name: NSNotification.Name("com.apple.screenIsLocked"),
             object: nil)
     }
 
@@ -48,8 +58,12 @@ final class SessionWakeMonitor {
         DistributedNotificationCenter.default().removeObserver(self)
     }
 
-    @objc private func handle() {
+    @objc private func handleWake() {
         onWake?()
+    }
+
+    @objc private func handleLock() {
+        onLock?()
     }
 
     deinit {
