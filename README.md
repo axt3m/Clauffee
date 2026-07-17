@@ -21,11 +21,13 @@ while you step away. Toggle **Start Brew**, shut the lid, walk off.
 
 ## Download
 
-Grab the latest **`Clauffee-<version>.zip`** from the
+Grab the latest **`Clauffee-<version>.dmg`** (or **`.zip`**) from the
 [**Releases**](https://github.com/axt3m/Clauffee/releases) page — no need to
 build it yourself. Works on both Apple Silicon and Intel Macs.
 
-1. Unzip and drag **Clauffee.app** into `/Applications`.
+1. Open the **`.dmg`** and drag **Clauffee.app** onto the **Applications**
+   shortcut (or, with the `.zip`, unzip and move **Clauffee.app** into
+   `/Applications`).
 2. Because the app isn't notarized by Apple, macOS blocks it on first launch.
    **Right-click Clauffee.app → Open → Open** (you only do this once).
 3. ☕ appears in your menu bar.
