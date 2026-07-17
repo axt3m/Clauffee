@@ -39,6 +39,13 @@ final class BrewViewModel: ObservableObject {
 
     private(set) var lastBrewDuration: TimeInterval = 0
 
+    /// Vrai si l'utilisateur est « parti » pendant la session — capot fermé OU
+    /// écran verrouillé — et n'est pas revenu depuis (déverrouillage / réveil /
+    /// capot rouvert). Sert à décider si on endort le Mac à l'auto-off. Plus
+    /// fiable qu'une lecture ponctuelle de `AppleClamshellState` (nil/false au
+    /// mauvais moment), et couvre le lock sans fermeture du capot.
+    private var awayDuringBrew = false
+
     // MARK: Dépendances
 
     private let settings: SettingsStore
@@ -86,6 +93,7 @@ final class BrewViewModel: ObservableObject {
         lidMonitor.onLidOpened = { [weak self] in self?.handleSessionReturn() }
         lidMonitor.onLidClosed = { [weak self] in self?.handleLidClosed() }
         wakeMonitor.onWake = { [weak self] in self?.handleSessionReturn() }
+        wakeMonitor.onLock = { [weak self] in self?.handleScreenLocked() }
         Notifier.shared.onStopRequested = { [weak self] in self?.endBrew(.manual) }
     }
 
@@ -139,6 +147,7 @@ final class BrewViewModel: ObservableObject {
             brewStart = Date()
             elapsed = 0
             pendingSummaryDuration = nil
+            awayDuringBrew = false
 
             startTick()
             claudeMonitor.start()
@@ -166,12 +175,15 @@ final class BrewViewModel: ObservableObject {
         stopTick()
         claudeMonitor.stop()
 
-        let lidClosed = lidMonitor.isClosed == true
+        // L'utilisateur est-il parti (capot fermé OU écran verrouillé) pendant la
+        // session ? Drapeau fiable, plutôt qu'une lecture ponctuelle de
+        // AppleClamshellState qui peut renvoyer nil/false pile à l'auto-off.
+        let userAway = awayDuringBrew
 
-        // Fin de session capot fermé (l'utilisateur est parti) : on devra
-        // ENDORMIR le Mac nous-mêmes. Remettre `disablesleep 0` ne suffit pas
-        // (voir PowerManager.sleepNow). Faux pour un arrêt manuel / Quitter,
-        // où l'utilisateur est présent devant la machine.
+        // Fin de session alors que l'utilisateur est parti : on devra ENDORMIR le
+        // Mac nous-mêmes. Remettre `disablesleep 0` ne suffit pas (voir
+        // PowerManager.sleepNow). Faux pour un arrêt manuel / Quitter, où
+        // l'utilisateur est présent devant la machine.
         var sleepAfterEnd = false
 
         switch reason {
@@ -180,11 +192,11 @@ final class BrewViewModel: ObservableObject {
                 let toast = settings.strings.autoOffToast(settings.limitLabel)
                 ToastPresenter.shared.show(emoji: toast.emoji, text: toast.text, palette: settings.palette)
             }
-            if lidClosed { pendingSummaryDuration = lastBrewDuration; sleepAfterEnd = true }
+            if userAway { pendingSummaryDuration = lastBrewDuration; sleepAfterEnd = true }
         case .claudeDone:
             let toast = settings.strings.claudeOffToast
             ToastPresenter.shared.show(emoji: toast.emoji, text: toast.text, palette: settings.palette)
-            if lidClosed { pendingSummaryDuration = lastBrewDuration; sleepAfterEnd = true }
+            if userAway { pendingSummaryDuration = lastBrewDuration; sleepAfterEnd = true }
         case .manual, .quit:
             break
         }
@@ -212,7 +224,16 @@ final class BrewViewModel: ObservableObject {
     /// machine reste éveillée grâce à disablesleep). Systématique, non configurable.
     private func handleLidClosed() {
         guard isBrewing else { return }
+        awayDuringBrew = true
         Task.detached { ScreenLocker.lock() }
+    }
+
+    /// Écran verrouillé pendant l'infusion (sans fermeture du capot) : traité
+    /// comme un départ, au même titre que le capot fermé — on endormira le Mac
+    /// à l'auto-off. Pas besoin de verrouiller nous-mêmes, c'est déjà fait.
+    private func handleScreenLocked() {
+        guard isBrewing else { return }
+        awayDuringBrew = true
     }
 
     /// Retour de l'utilisateur (capot rouvert ou réveil/déverrouillage). Le
@@ -224,6 +245,9 @@ final class BrewViewModel: ObservableObject {
         lastReturn = now
 
         if isBrewing {
+            // L'utilisateur est revenu (capot rouvert / réveil) pendant l'infusion :
+            // il est présent, on annule l'intention d'endormir à l'auto-off.
+            awayDuringBrew = false
             if settings.lidNotification {
                 Notifier.shared.notifyAsk(strings: settings.strings)
             }
